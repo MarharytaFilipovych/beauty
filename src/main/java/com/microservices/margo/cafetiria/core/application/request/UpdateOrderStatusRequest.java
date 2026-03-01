@@ -1,4 +1,4 @@
-package com.microservices.margo.cafetiria.core.application.requests;
+package com.microservices.margo.cafetiria.core.application.request;
 
 import com.microservices.margo.cafetiria.core.domain.OrderStatus;
 import jakarta.validation.constraints.NotNull;

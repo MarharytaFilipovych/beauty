@@ -1,4 +1,4 @@
-package com.microservices.margo.cafetiria.core.application.requests;
+package com.microservices.margo.cafetiria.core.application.request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

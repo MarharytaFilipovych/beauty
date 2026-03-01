@@ -1,10 +1,10 @@
 package com.microservices.margo.cafetiria.api;
 
-import com.microservices.margo.cafetiria.core.application.requests.CreateOrderRequest;
-import com.microservices.margo.cafetiria.core.application.requests.UpdateOrderStatusRequest;
-import com.microservices.margo.cafetiria.core.application.usecases.CreateOrderUseCase;
-import com.microservices.margo.cafetiria.core.application.usecases.GetOrderUseCase;
-import com.microservices.margo.cafetiria.core.application.usecases.UpdateOrderStatusUseCase;
+import com.microservices.margo.cafetiria.core.application.request.CreateOrderRequest;
+import com.microservices.margo.cafetiria.core.application.request.UpdateOrderStatusRequest;
+import com.microservices.margo.cafetiria.core.application.usecase.CreateOrderUseCase;
+import com.microservices.margo.cafetiria.core.application.usecase.GetOrderUseCase;
+import com.microservices.margo.cafetiria.core.application.usecase.UpdateOrderStatusUseCase;
 import com.microservices.margo.cafetiria.core.domain.Order;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

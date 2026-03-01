@@ -1,4 +1,4 @@
-package com.microservices.margo.cafetiria.core.application.usecases;
+package com.microservices.margo.cafetiria.core.application.usecase;
 
 import com.microservices.margo.cafetiria.core.application.mapper.OrderMapper;
 import com.microservices.margo.cafetiria.core.domain.Order;

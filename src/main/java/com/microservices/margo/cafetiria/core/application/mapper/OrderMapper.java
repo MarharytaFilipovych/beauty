@@ -1,6 +1,6 @@
 package com.microservices.margo.cafetiria.core.application.mapper;
 
-import com.microservices.margo.cafetiria.core.application.requests.CreateOrderRequest;
+import com.microservices.margo.cafetiria.core.application.request.CreateOrderRequest;
 import com.microservices.margo.cafetiria.core.domain.Order;
 import com.microservices.margo.cafetiria.core.domain.OrderStatus;
 import com.microservices.margo.cafetiria.core.infrastructure.entity.OrderEntity;
