@@ -1,4 +1,4 @@
-package com.microservices.margo.cafetiria.shared.exception;
+package com.microservices.margo.cafetiria.api.exception;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;

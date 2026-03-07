@@ -30,6 +30,7 @@ For now, in this early young stage, we should avoid unnecessary complexities.
 
 src/main/java/com/cafeteria/:
 * api/ ->  HTTP layer (no business logic): OrderController, HealthController
+  * exception/ -> ErrorResponse, GlobalExceptionHandler
 * core/
   * domain/ -> Order aggregate, OrderStatus enum
   * application/
@@ -40,7 +41,6 @@ src/main/java/com/cafeteria/:
     * entity/ -> JPA OrderEntity
     * repository/ -> JPA OrderRepository interface
     * config/ -> ObjectMapperConfig and SwaggerConfig
-* shared/ -> ErrorResponse dto, GlobalExceptionHandler
 
 One migration was applied, which encapsulated **orders** table creation. It is located within _/src/main/resources/db/migration/V1__create_orders_table.sql_.
 ---
