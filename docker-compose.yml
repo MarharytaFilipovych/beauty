@@ -22,7 +22,7 @@ services:
   cafetiria:
     container_name: cafetiria
     build:
-      context: .
+      context: ./cafetiria
       dockerfile: Dockerfile
     platform: linux/arm64
     environment:
@@ -42,4 +42,4 @@ networks:
     driver: bridge
 
 volumes:
-  - postgres-data:
+  postgres-data:

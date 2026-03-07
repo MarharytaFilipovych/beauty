@@ -286,7 +286,16 @@ curl -X PATCH http://localhost:8088/api/orders/b3f1c2d4-e5a6-7890-bcde-f12345678
 curl http://localhost:8088/orders/not-a-uuid
 ```
 ```json
-"Invalid value for parameter 'id': not-a-uuid"
+{"message":"Invalid value for parameter 'id': not-a-uuid"}
 ```
 
+**Invalid json format `400`:**
+```bash
+curl -X PATCH http://localhost:8088/api/orders/bd193441-2520-4392-a0aa-195000965fea/status \
+  -H "Content-Type: application/json" \
+  -d '{"newStatus": "CANCEL'    
+```
+```json
+{"message":"Invalid JSON format in request body"}
+```
 ---
