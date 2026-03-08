@@ -23,11 +23,11 @@ src/main/java/com/cafeteria/:
   * exception/ -> ErrorResponse, GlobalExceptionHandler
 * core/
   * domain/ -> Order aggregate, OrderStatus enum
+    * validation/ -> ValidationConstants
   * application/
     * request/ -> Request DTOs: CreateOrderRequest, UpdateOrderStatusRequest
     * usecase/ -> CreateOrderUseCase, GetOrderUseCase, UpdateOrderStatusUseCase
     * mapper/ -> OrderMapper
-    * validation/ -> ValidationConstants
   * infrastructure/
     * entity/ -> JPA OrderEntity
     * repository/ -> JPA OrderRepository interface
@@ -138,7 +138,7 @@ http://localhost:8088/swagger-ui/index.html
 Returns the application health status. Responds with `200 OK` when the app and database are reachable, or `503 Service Unavailable` when any component is down.
 
 ```bash
-curl http://localhost:8088/api/actuator/health
+curl http://localhost:8088/api/health
 ```
 
 **Response `200 UP`:**

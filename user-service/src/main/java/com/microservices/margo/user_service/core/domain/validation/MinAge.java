@@ -1,4 +1,4 @@
-package com.microservices.margo.user_service.core.application.validation;
+package com.microservices.margo.user_service.core.domain.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -8,7 +8,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static com.microservices.margo.user_service.core.application.validation.ValidationConstants.MIN_AGE;
+import static com.microservices.margo.user_service.core.domain.validation.ValidationConstants.MIN_AGE;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

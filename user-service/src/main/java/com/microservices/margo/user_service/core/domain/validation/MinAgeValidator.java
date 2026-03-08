@@ -1,4 +1,4 @@
-package com.microservices.margo.user_service.core.application.validation;
+package com.microservices.margo.user_service.core.domain.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

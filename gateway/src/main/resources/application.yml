@@ -5,6 +5,21 @@ spring:
       server:
         webmvc:
           routes:
+            - id: order-health
+              order: 1
+              uri: ${ORDER_SERVICE_URL:http://localhost:8088}
+              predicates:
+                - Path=/orders/health
+              filters:
+                - RewritePath=/orders/health, /api/health
+
+            - id: user-health
+              order: 1
+              uri: ${USER_SERVICE_URL:http://localhost:8080}
+              predicates:
+                - Path=/users/health
+              filters:
+                - RewritePath=/users/health, /api/health
             - id: order-service
               uri: ${ORDER_SERVICE_URL:http://localhost:8088}
               predicates:
@@ -18,6 +33,7 @@ spring:
                 - Path=/users,/users/**
               filters:
                 - RewritePath=/users(?:/(?<segment>.+))?, /api/users/$\{segment}
+
 
 server:
   port: 8081

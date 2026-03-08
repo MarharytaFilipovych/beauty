@@ -1,6 +1,6 @@
 package com.microservices.margo.user_service.core.application.request;
 
-import com.microservices.margo.user_service.core.application.validation.MinAge;
+import com.microservices.margo.user_service.core.domain.validation.MinAge;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -8,8 +8,8 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
-import static com.microservices.margo.user_service.core.application.validation.ValidationConstants.MAX_EMAIL_LENGTH;
-import static com.microservices.margo.user_service.core.application.validation.ValidationConstants.MAX_NAME_LENGTH;
+import static com.microservices.margo.user_service.core.domain.validation.ValidationConstants.MAX_EMAIL_LENGTH;
+import static com.microservices.margo.user_service.core.domain.validation.ValidationConstants.MAX_NAME_LENGTH;
 
 public record CreateUserRequest(
 

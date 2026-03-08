@@ -1,4 +1,4 @@
-package com.microservices.margo.user_service.core.application.validation;
+package com.microservices.margo.user_service.core.domain.validation;
 
 public final class ValidationConstants {
     public static final int MIN_AGE = 14;

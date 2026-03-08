@@ -25,11 +25,11 @@ src/main/java/com/microservices/margo/users/
   * exception/ -> ErrorResponse, GlobalExceptionHandler
 * core/
   * domain/ -> User record
+    * validation/ -> MinAge, MimAgeValidator, ValidationConstants
   * application/
     * request/ -> Request DTOs: CreateUserRequest
     * usecase/ -> CreateUserUseCase, GetUserUseCase
     * mapper/ -> UserMapper
-    * validation/ -> MinAge, MimAgeValidator, ValidationConstants
 * infrastructure/
   * entity/ -> JPA UserEntity
   * repository/ -> JPA UserRepository interface
@@ -150,7 +150,7 @@ Returns the application health status. Responds with `200 OK` when the app and d
 are reachable, or `503 Service Unavailable` when any component is down.
 
 ```bash
-curl http://localhost:8080/api/actuator/health
+curl http://localhost:8080/api/health
 ```
 
 **Response `200 UP`:**

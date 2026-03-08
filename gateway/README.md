@@ -86,6 +86,11 @@ All services will be available via the gateway at `http://localhost:8081`.
 ```bash
 curl http://localhost:8081/actuator/health
 ```
+health of microservices is also accessible via gateway;
+```bash
+curl http://localhost:8088/orders/health
+curl http://localhost:8081/users/health
+```
 
 **Response `200 UP`:**
 

@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static com.microservices.margo.order_service.core.application.validation.ValidationConstants.MAX_NAME_LENGTH;
+import static com.microservices.margo.order_service.core.domain.validation.ValidationConstants.MAX_NAME_LENGTH;
 
 @Builder(toBuilder = true)
 public record Order(
