@@ -1,45 +1,105 @@
 services:
-  postgres:
-    container_name: postgres
+  order-db:
+    container_name: order-db
     image: postgres:16
     platform: linux/arm64
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: cafetiria
+      POSTGRES_DB: orders
     ports:
       - "5432:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - order-db-data:/var/lib/postgresql/data
     networks:
       - cafetiria-network
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d cafetiria" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d orders" ]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  cafetiria:
-    container_name: cafetiria
+  user-db:
+    container_name: user-db
+    image: postgres:16
+    platform: linux/arm64
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: users
+    ports:
+      - "5433:5432"
+    volumes:
+      - user-db-data:/var/lib/postgresql/data
+    networks:
+      - cafetiria-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d users"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  orders:
+    container_name: order-service
     build:
-      context: ./cafetiria
+      context: ./orders
       dockerfile: Dockerfile
     platform: linux/arm64
     environment:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      DB_URL: jdbc:postgresql://postgres:5432/cafetiria
+      DB_URL: jdbc:postgresql://order-db:5432/orders
+      USERS_URL: http://user-service:8080/api/users/
     ports:
       - "8088:8088"
     networks:
       - cafetiria-network
     depends_on:
-      postgres:
+      orders-db:
         condition: service_healthy
+      user-service:
+        condition: service_started
+
+  user-service:
+    container_name: user-service
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    platform: linux/arm64
+    environment:
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_URL: jdbc:postgresql://user-db:5432/users
+    ports:
+      - "8080:8080"
+    networks:
+      - cafetiria-network
+    depends_on:
+      users-db:
+        condition: service_healthy
+
+  gateway:
+    container_name: gateway
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    platform: linux/arm64
+    environment:
+      ORDER_SERVICE_URL: http://order-service:8088
+      USERS_SERVICE_URL: http://user-service:8080
+    ports:
+      - "8081:8081"
+    networks:
+      - cafetiria-network
+    depends_on:
+      - user-service
+      - order-service
+
 
 networks:
   cafetiria-network:
     driver: bridge
 
 volumes:
-  postgres-data:
+  order-db-data:
+  user-db-data:

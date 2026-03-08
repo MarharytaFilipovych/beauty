@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b60da994-66bb-4d7e-8bf7-90c7bb538259" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/CafetiriaDeliveryApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/api/HealthController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/api/OrderController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/api/exception/ErrorResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/api/exception/GlobalExceptionHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/core/application/mapper/OrderMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/core/application/request/CreateOrderRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/core/application/request/UpdateOrderStatusRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/core/application/usecase/CreateOrderUseCase.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/core/application/usecase/GetOrderUseCase.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/core/application/usecase/UpdateOrderStatusUseCase.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/core/domain/Order.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/core/domain/OrderStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/core/infrastructure/client/UserValidationClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/core/infrastructure/config/ObjectMapperConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/core/infrastructure/config/RestClientConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/core/infrastructure/config/SwaggerConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/core/infrastructure/entity/OrderEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/core/infrastructure/repository/OrderRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/migration/V1__create_orders_table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/migration/V2__add_customer_id.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/microservices/margo/cafetiria/CafetiriaDeliveryApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/microservices/margo/cafetiria/api/HealthControllerTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/microservices/margo/cafetiria/api/OrderControllerTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/microservices/margo/cafetiria/api/exception/GlobalExceptionHandlerTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/microservices/margo/cafetiria/core/application/usecase/CreateOrderUseCaseTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/microservices/margo/cafetiria/core/application/usecase/GetOrderUseCaseTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/microservices/margo/cafetiria/core/application/usecase/TestData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/microservices/margo/cafetiria/core/application/usecase/UpdateOrderStatusUseCaseTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/microservices/margo/cafetiria/core/domain/OrderStatusTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/microservices/margo/cafetiria/core/domain/OrderTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/microservices/margo/cafetiria/core/infrastructure/client/UserValidationClientTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../gateway/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../gateway/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../user-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../user-service/pom.xml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+        <option value="JUnit5 Test Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/.." value="practice-5" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="3AKvhbfoQW7a9EFRadxbaAMqa6G" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "JUnit.CreateOrderUseCaseTest.executor": "Run",
+    "JUnit.GetOrderUseCaseTest.executor": "Run",
+    "JUnit.GlobalExceptionHandlerTest.executor": "Run",
+    "JUnit.GlobalExceptionHandlerTest.handleResponseStatus_returnsCorrectStatusAndReason.executor": "Run",
+    "JUnit.HealthControllerTest.executor": "Run",
+    "JUnit.HealthControllerTest.healthEndpoint_shouldDelegateToActuator.executor": "Run",
+    "JUnit.HealthControllerTest.when_healthEndpointStatusIsUp_shouldReturnOk.executor": "Run",
+    "JUnit.OrderControllerTest.executor": "Run",
+    "JUnit.OrderStatusTest.executor": "Run",
+    "JUnit.OrderTest.executor": "Run",
+    "JUnit.UpdateOrderStatusUseCaseTest.executor": "Run",
+    "JUnit.UserValidationClientTest.executor": "Run",
+    "JUnit.java in cafetiria.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "Spring Boot.CafetiriaDeliveryApplication.executor": "Run",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+    "git-widget-placeholder": "practice-5",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/marharyta/Documents/cafe/cafetiria",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/api" />
+      <recent name="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/core/applicaion/commands" />
+      <recent name="$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/core/applicaion/usecases" />
+    </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="com.microservices.margo.cafetiria.api.exception" />
+      <recent name="com.microservices.margo.cafetiria.api" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="com.microservices.margo.cafetiria.core.infrastructure.client" />
+      <recent name="com.microservices.margo.cafetiria.shared.exception" />
+      <recent name="com.microservices.margo.cafetiria.core.applicaion.usecases" />
+      <recent name="com.microservices.margo.cafetiria.core.domain" />
+      <recent name="com.microservices.margo.cafetiria.api" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JUnit.OrderTest">
+    <configuration name="GlobalExceptionHandlerTest.handleResponseStatus_returnsCorrectStatusAndReason" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="cafetiria" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.microservices.margo.cafetiria.api.exception.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.microservices.margo.cafetiria.api.exception" />
+      <option name="MAIN_CLASS_NAME" value="com.microservices.margo.cafetiria.api.exception.GlobalExceptionHandlerTest" />
+      <option name="METHOD_NAME" value="handleResponseStatus_returnsCorrectStatusAndReason" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="OrderControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="cafetiria" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.microservices.margo.cafetiria.api.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.microservices.margo.cafetiria.api" />
+      <option name="MAIN_CLASS_NAME" value="com.microservices.margo.cafetiria.api.OrderControllerTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="OrderTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="cafetiria" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.microservices.margo.cafetiria.core.domain.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.microservices.margo.cafetiria.core.domain" />
+      <option name="MAIN_CLASS_NAME" value="com.microservices.margo.cafetiria.core.domain.OrderTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="UserValidationClientTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="cafetiria" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.microservices.margo.cafetiria.core.infrastructure.client.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.microservices.margo.cafetiria.core.infrastructure.client" />
+      <option name="MAIN_CLASS_NAME" value="com.microservices.margo.cafetiria.core.infrastructure.client.UserValidationClientTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="java in cafetiria" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="cafetiria" />
+      <option name="TEST_OBJECT" value="directory" />
+      <dir value="$PROJECT_DIR$/src/test/java" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CafetiriaDeliveryApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="cafetiria" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.microservices.margo.cafetiria.CafetiriaDeliveryApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.OrderTest" />
+        <item itemvalue="JUnit.OrderControllerTest" />
+        <item itemvalue="JUnit.UserValidationClientTest" />
+        <item itemvalue="JUnit.GlobalExceptionHandlerTest.handleResponseStatus_returnsCorrectStatusAndReason" />
+        <item itemvalue="JUnit.java in cafetiria" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.25557.131" />
+        <option value="bundled-js-predefined-d6986cc7102b-b598e85cdad2-JavaScript-IU-252.25557.131" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b60da994-66bb-4d7e-8bf7-90c7bb538259" name="Changes" comment="" />
+      <created>1772354196509</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1772354196509</updated>
+      <workItem from="1772354197833" duration="14844000" />
+      <workItem from="1772378353798" duration="4701000" />
+      <workItem from="1772384708374" duration="2138000" />
+      <workItem from="1772389189559" duration="2417000" />
+      <workItem from="1772471689811" duration="318000" />
+      <workItem from="1772907664703" duration="4507000" />
+      <workItem from="1772912204067" duration="8838000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/../practice4-cafeteria 2/src/main/java/com/cafeteria/api/controllers/OrderController.java</url>
+          <line>38</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/microservices/margo/cafetiria/core/infrastructure/repository/OrderRepository.java</url>
+          <line>7</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
