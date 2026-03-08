@@ -39,10 +39,10 @@ services:
       timeout: 5s
       retries: 5
 
-  orders:
+  order-service:
     container_name: order-service
     build:
-      context: ./orders
+      context: ./order-service
       dockerfile: Dockerfile
     platform: linux/arm64
     environment:
@@ -55,7 +55,7 @@ services:
     networks:
       - cafetiria-network
     depends_on:
-      orders-db:
+      order-db:
         condition: service_healthy
       user-service:
         condition: service_started
@@ -75,7 +75,7 @@ services:
     networks:
       - cafetiria-network
     depends_on:
-      users-db:
+      user-db:
         condition: service_healthy
 
   gateway:
@@ -86,7 +86,7 @@ services:
     platform: linux/arm64
     environment:
       ORDER_SERVICE_URL: http://order-service:8088
-      USERS_SERVICE_URL: http://user-service:8080
+      USER_SERVICE_URL: http://user-service:8080
     ports:
       - "8081:8081"
     networks:
@@ -94,7 +94,6 @@ services:
     depends_on:
       - user-service
       - order-service
-
 
 networks:
   cafetiria-network:

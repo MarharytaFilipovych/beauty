@@ -16,11 +16,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.microservices.margo.order_service.TestData.pendingOrder;
 import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("Order domain tests")
@@ -40,18 +41,6 @@ class OrderTest {
         validatorFactory.close();
     }
 
-    private Order pendingOrder() {
-        return Order.builder()
-                .id(UUID.randomUUID())
-                .customerId(UUID.randomUUID())
-                .itemName("Latte")
-                .quantity(2)
-                .price(new BigDecimal("5.99"))
-                .status(OrderStatus.PENDING)
-                .createdAt(LocalDateTime.now())
-                .build();
-    }
-
     private Order orderWithStatus(OrderStatus status) {
         return pendingOrder().toBuilder().status(status).build();
     }
@@ -68,7 +57,7 @@ class OrderTest {
         // Arrange & Act
         Order order = Order.builder()
                 .id(UUID.randomUUID())
-                .customerId(UUID.randomUUID())
+                .ownerUserId(UUID.randomUUID())
                 .itemName("Latte")
                 .quantity(1)
                 .price(BigDecimal.ONE)
@@ -197,7 +186,7 @@ class OrderTest {
 
         // Assert
         assertThat(updated.id()).isEqualTo(original.id());
-        assertThat(updated.customerId()).isEqualTo(original.customerId());
+        assertThat(updated.ownerUserId()).isEqualTo(original.ownerUserId());
         assertThat(updated.itemName()).isEqualTo(original.itemName());
         assertThat(updated.quantity()).isEqualTo(original.quantity());
         assertThat(updated.price()).isEqualByComparingTo(original.price());
@@ -218,10 +207,10 @@ class OrderTest {
     }
 
     @Test
-    @DisplayName("does not allow null customerId")
+    @DisplayName("does not allow null ownerUserId")
     void customerId_isNull() {
         // Arrange
-        Order order = pendingOrder().toBuilder().customerId(null).build();
+        Order order = pendingOrder().toBuilder().ownerUserId(null).build();
 
         // Act
         Set<String> messages = violationMessages(order);
@@ -243,6 +232,21 @@ class OrderTest {
 
         // Assert
         assertThat(messages).contains("Item name must be specified.");
+    }
+
+    @Test
+    @DisplayName("does not allow itemName longer than 255 characters")
+    void itemName_isTooLong() {
+        // Arrange
+        Order order = pendingOrder().toBuilder()
+                .itemName("A".repeat(256))
+                .build();
+
+        // Act
+        Set<String> messages = violationMessages(order);
+
+        // Assert
+        assertThat(messages).contains("Item name must consist at most of 255 symbols");
     }
 
     @ParameterizedTest
@@ -331,7 +335,7 @@ class OrderTest {
     void multipleViolations_shouldBeReportedTogether() {
         // Arrange
         Order order = pendingOrder().toBuilder()
-                .customerId(null)
+                .ownerUserId(null)
                 .itemName("")
                 .quantity(0)
                 .price(new BigDecimal("-1"))

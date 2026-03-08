@@ -1,5 +1,6 @@
 package com.microservices.margo.user_service.core.application.usecase;
 
+import com.microservices.margo.user_service.core.application.exception.UserAlreadyExistsException;
 import com.microservices.margo.user_service.core.application.mapper.UserMapper;
 import com.microservices.margo.user_service.core.application.request.CreateUserRequest;
 import com.microservices.margo.user_service.core.domain.User;
@@ -17,6 +18,9 @@ public class CreateUserUseCase {
 
     public User execute(CreateUserRequest request) {
         log.info("Creating user with email {}", request.email());
+        if (userRepository.existsByEmail(request.email())){
+         throw new UserAlreadyExistsException("User with email " + request.email() + " already exists!");
+        }
         var saved = userRepository.save(userMapper.toEntity(request));
         return userMapper.toDomain(saved);
     }

@@ -41,8 +41,8 @@ public class OrderEntity {
     @Column(nullable = false)
     private OrderStatus status;
 
-    @Column(name = "customer_id", nullable = false)
-    private UUID customerId;
+    @Column(name = "owner_user_id", nullable = false)
+    private UUID ownerUserId;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

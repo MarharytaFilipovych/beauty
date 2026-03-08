@@ -20,9 +20,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static com.microservices.margo.order_service.TestData.CUSTOMER_ID;
+import static com.microservices.margo.order_service.TestData.ORDER_ID;
+import static com.microservices.margo.order_service.TestData.pendingOrder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -53,30 +55,16 @@ class OrderControllerTest {
     @MockitoBean
     private UpdateOrderStatusUseCase updateStatus;
 
-    private static final UUID ORDER_ID = UUID.randomUUID();
-    private static final UUID CUSTOMER_ID = UUID.randomUUID();
     private static final String ORDERS_PATH = "/orders";
     private static final String ORDERS_ID_PATH = ORDERS_PATH + "/{id}";
     private static final String ORDERS_ID_PATH_STATUS = ORDERS_ID_PATH + "/status";
-
-    private Order sampleOrder() {
-        return Order.builder()
-                .id(ORDER_ID)
-                .customerId(CUSTOMER_ID)
-                .itemName("Latte")
-                .quantity(2)
-                .price(new BigDecimal("5.99"))
-                .status(OrderStatus.PENDING)
-                .createdAt(LocalDateTime.now())
-                .build();
-    }
 
     @Test
     void create_shouldReturn201_whenValidRequest() throws Exception {
         // Arrange
         CreateOrderRequest request = new CreateOrderRequest(
                 "Latte", 2, new BigDecimal("5.99"), CUSTOMER_ID);
-        Order order = sampleOrder();
+        Order order = pendingOrder();
 
         when(createOrder.execute(request)).thenReturn(order);
 
@@ -87,7 +75,7 @@ class OrderControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
                 .andExpect(jsonPath("$.id").value(ORDER_ID.toString()))
-                .andExpect(jsonPath("$.customerId").value(request.customerId().toString()))
+                .andExpect(jsonPath("$.ownerUserId").value(request.ownerUserId().toString()))
                 .andExpect(jsonPath("$.status").value(OrderStatus.PENDING.name()));
     }
 
@@ -180,15 +168,28 @@ class OrderControllerTest {
     }
 
     @Test
+    void create_shouldReturn400_whenItemNameIsTooLong() throws Exception {
+        // Arrange
+        CreateOrderRequest request = new CreateOrderRequest(
+                "A".repeat(256), 2, new BigDecimal("5.99"), CUSTOMER_ID);
+
+        // Act & Assert
+        mockMvc.perform(post(ORDERS_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void getById_shouldReturn200_whenOrderExists() throws Exception {
         // Arrange
-        when(getOrder.execute(ORDER_ID)).thenReturn(sampleOrder());
+        when(getOrder.execute(ORDER_ID)).thenReturn(pendingOrder());
 
         // Act & Assert
         mockMvc.perform(get(ORDERS_ID_PATH, ORDER_ID))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ORDER_ID.toString()))
-                .andExpect(jsonPath("$.customerId").value(CUSTOMER_ID.toString()))
+                .andExpect(jsonPath("$.ownerUserId").value(CUSTOMER_ID.toString()))
                 .andExpect(jsonPath("$.status").value(OrderStatus.PENDING.name()));
     }
 

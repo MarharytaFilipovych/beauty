@@ -19,7 +19,7 @@ import java.net.URI;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping({"/users", "/users/"})
 @RequiredArgsConstructor
 public class UserController {
 

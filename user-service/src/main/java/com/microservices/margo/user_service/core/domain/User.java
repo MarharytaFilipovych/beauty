@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public record User(
         UUID id,
-        String beautyName,
+        String name,
         String surname,
         String phone,
         LocalDate birthDate,

@@ -17,8 +17,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.UUID;
-import static com.microservices.margo.order_service.core.application.usecase.TestData.buildEntity;
-import static com.microservices.margo.order_service.core.application.usecase.TestData.buildOrder;
+import static com.microservices.margo.order_service.TestData.buildEntity;
+import static com.microservices.margo.order_service.TestData.buildOrder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -75,7 +75,7 @@ class CreateOrderUseCaseTest {
                 "Laptop", 1, new BigDecimal("1499.99"), UUID.randomUUID());
 
         doThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found"))
-                .when(userValidationClient).validateUserExists(request.customerId());
+                .when(userValidationClient).validateUserExists(request.ownerUserId());
 
         // Act & Assert
         assertThatThrownBy(() -> createOrderUseCase.execute(request))

@@ -8,7 +8,7 @@
 ---
 ## Domain Rules
 
-1. **Customer id is required**
+1. **OwnerUserId id is required**
 2. **Item name cannot be blank**
 3. **Quantity must be at least 1**
 4. **Price cannot be negative**
@@ -16,16 +16,6 @@ These rules are enforced within `Order` domain entity with the help of annotatio
 5. **Status transitions are strictly limited** — `PENDING → CONFIRMED/CANCELLED`, `CONFIRMED → DELIVERED/CANCELLED`. Terminal states (`DELIVERED`, `CANCELLED`) cannot be changed. Enforced within `Order.changeStatus()` method.
 ---
 
----
-## ADR: Why Modular Monolith First?
-
-Staring with this approach allows to avoid operational overhead. 
-There is no need to start extracting microservices yet because the logic is currently pretty simple and allows for staying with the monolith approach.
-The deployment stays simple (one Docker image and compose file).
-Nevertheless, clear module boundaries can be easily extracted into a separate microservice when time comes.
-For now, in this early young stage, we should avoid unnecessary complexities.
-
----
 ## Architecture
 
 src/main/java/com/cafeteria/:
@@ -37,6 +27,7 @@ src/main/java/com/cafeteria/:
     * request/ -> Request DTOs: CreateOrderRequest, UpdateOrderStatusRequest
     * usecase/ -> CreateOrderUseCase, GetOrderUseCase, UpdateOrderStatusUseCase
     * mapper/ -> OrderMapper
+    * validation/ -> ValidationConstants
   * infrastructure/
     * entity/ -> JPA OrderEntity
     * repository/ -> JPA OrderRepository interface
@@ -123,13 +114,13 @@ The API will be available at `http://localhost:8088`.
 
 ### Test coverage:
 * `HealthControllerTest` - 4 unit tests
-* `OrderControllerTest` - 16 unit tests
+* `OrderControllerTest` - 17 unit tests
 * `CreateOrderUseCaseTest` - 2 unit tests
 * `GetOrderUseCaseTest` - 2 unit tests
 * `UpdateOrderStatusUseCaseTest` - 7 unit tests
-* `OrderTest` — 40 unit tests
+* `OrderTest` — 41 unit tests
 * `OrderStatusTest` - 16 unit tests
-* `GlobalExceptionHandlerTest` — 13 unit tests
+* `GlobalExceptionHandlerTest` — 16 unit tests
 ---
 
 ---
@@ -182,7 +173,7 @@ curl http://localhost:8088/api/actuator/health
 curl -X POST http://localhost:8088/api/orders \
   -H "Content-Type: application/json" \
   -d '{
-    "customerId": "b3f1c2d4-e5a6-7890-bcde-f12345678901",
+    "ownerUserId": "b3f1c2d4-e5a6-7890-bcde-f12345678901",
     "itemName": "Latte",
     "quantity": 2,
     "price": 5.99
@@ -214,7 +205,7 @@ curl http://localhost:8088/api/orders/b3f1c2d4-e5a6-7890-bcde-f12345678901
 ```json
 {
   "id": "b3f1c2d4-e5a6-7890-bcde-f12345678901",
-  "customerName": "b3f1c2d4-e5a6-7890-bcde-f12345678901",
+  "ownerUserId": "b3f1c2d4-e5a6-7890-bcde-f12345678901",
   "itemName": "Latte",
   "quantity": 2,
   "price": 5.99,
@@ -266,7 +257,7 @@ curl http://localhost:8088/api/orders/00000000-0000-0000-0000-000000000000
 ```bash
 curl -X POST http://localhost:8088/api/orders \
   -H "Content-Type: application/json" \
-  -d '{"customerId": "", "itemName": "", "quantity": 0, "price": -1}'
+  -d '{"ownerUserId": "", "itemName": "", "quantity": 0, "price": -1}'
 ```
 ```json
 {"message": "customerName: must not be blank|\nitemName: must not be blank|\nquantity: must be greater than or equal to 1|\nprice: must be greater than 0"}

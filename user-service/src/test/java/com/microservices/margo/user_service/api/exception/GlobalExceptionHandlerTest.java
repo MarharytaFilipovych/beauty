@@ -1,5 +1,6 @@
-package com.microservices.margo.order_service.api.exception;
+package com.microservices.margo.user_service.api.exception;
 
+import com.microservices.margo.user_service.core.application.exception.UserAlreadyExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -8,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.core.MethodParameter;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
@@ -16,14 +16,14 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -252,23 +252,6 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("returns correct status and reason for ResponseStatusException")
-    void handleResponseStatus_returnsCorrectStatusAndReason() {
-        // Arrange
-        ResponseStatusException exception = new ResponseStatusException(
-                HttpStatus.SERVICE_UNAVAILABLE, "Service is unavailable");
-
-        // Act
-        ResponseEntity<?> response = handler.handleResponseStatus(exception);
-
-        // Assert
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
-        assertNotNull(response.getBody());
-        assertThat(((ErrorResponse) response.getBody()).message())
-                .isEqualTo("Service is unavailable");
-    }
-
-    @Test
     @DisplayName("returns 409 for DataIntegrityViolationException")
     void handleDataIntegrityViolation_returns409() {
         // Act
@@ -282,11 +265,27 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("returns 409 with message for UserAlreadyExistsException")
+    void handleUserAlreadyExists_returns409() {
+        // Arrange
+        UserAlreadyExistsException exception = new UserAlreadyExistsException("User with email john@example.com already exists");
+
+        // Act
+        ResponseEntity<?> response = handler.handleUserAlreadyExists(exception);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(CONFLICT);
+        assertNotNull(response.getBody());
+        assertThat(((ErrorResponse) response.getBody()).message())
+                .isEqualTo("User with email john@example.com already exists");
+    }
+
+    @Test
     @DisplayName("returns 404 for NoHandlerFoundException")
     void handleNoHandlerFound_returns404() {
         // Arrange
         NoHandlerFoundException exception = new NoHandlerFoundException(
-                "GET", "/api/orders/unknown", new org.springframework.http.HttpHeaders());
+                "GET", "/api/users/unknown", new org.springframework.http.HttpHeaders());
 
         // Act
         ResponseEntity<?> response = handler.handleNoHandlerFound(exception);
@@ -296,7 +295,7 @@ class GlobalExceptionHandlerTest {
         assertNotNull(response.getBody());
         assertThat(((ErrorResponse) response.getBody()).message())
                 .contains("GET")
-                .contains("/api/orders/unknown");
+                .contains("/api/users/unknown");
     }
 
     private MethodArgumentNotValidException buildMethodArgumentNotValidException(
