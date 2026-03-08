@@ -20,7 +20,7 @@ public class TestData {
     static Order buildOrder(UUID id, OrderStatus status) {
         return Order.builder()
                 .id(id)
-                .customerName("Alice")
+                .customerId(UUID.randomUUID())
                 .itemName("Laptop")
                 .quantity(1)
                 .price(new BigDecimal("1499.99"))
@@ -32,7 +32,7 @@ public class TestData {
     static OrderEntity buildEntity(UUID id, OrderStatus status) {
         OrderEntity e = new OrderEntity();
         e.setId(id);
-        e.setCustomerName("Alice");
+        e.setCustomerId(UUID.randomUUID());
         e.setItemName("Laptop");
         e.setQuantity(1);
         e.setPrice(new BigDecimal("1499.99"));

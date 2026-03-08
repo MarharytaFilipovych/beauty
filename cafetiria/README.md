@@ -8,7 +8,7 @@
 ---
 ## Domain Rules
 
-1. **Customer name cannot be blank**
+1. **Customer id is required**
 2. **Item name cannot be blank**
 3. **Quantity must be at least 1**
 4. **Price cannot be negative**
@@ -40,9 +40,10 @@ src/main/java/com/cafeteria/:
   * infrastructure/
     * entity/ -> JPA OrderEntity
     * repository/ -> JPA OrderRepository interface
-    * config/ -> ObjectMapperConfig and SwaggerConfig
+    * config/ -> ObjectMapperConfig, SwaggerConfig, RestClientConfig
+    * client/ -> UserValidationClient
 
-One migration was applied, which encapsulated **orders** table creation. It is located within _/src/main/resources/db/migration/V1__create_orders_table.sql_.
+Two migration were applied, which encapsulated **orders** table creation and then its alteration (the removal of the customer name column and the addition of the customer id instead). It is located within _/src/main/resources/db/migration/V1__create_orders_table.sql_.
 ---
 
 ---
@@ -122,11 +123,11 @@ The API will be available at `http://localhost:8088`.
 
 ### Test coverage:
 * `HealthControllerTest` - 4 unit tests
-* `OrderControllerTest` - 15 unit tests
-* `CreateOrderUseCaseTest` - 1 unit test
+* `OrderControllerTest` - 16 unit tests
+* `CreateOrderUseCaseTest` - 2 unit tests
 * `GetOrderUseCaseTest` - 2 unit tests
 * `UpdateOrderStatusUseCaseTest` - 7 unit tests
-* `OrderTest` — 41 unit tests
+* `OrderTest` — 40 unit tests
 * `OrderStatusTest` - 16 unit tests
 * `GlobalExceptionHandlerTest` — 13 unit tests
 ---
@@ -181,7 +182,7 @@ curl http://localhost:8088/api/actuator/health
 curl -X POST http://localhost:8088/api/orders \
   -H "Content-Type: application/json" \
   -d '{
-    "customerName": "John Doe",
+    "customerId": "b3f1c2d4-e5a6-7890-bcde-f12345678901",
     "itemName": "Latte",
     "quantity": 2,
     "price": 5.99
@@ -192,7 +193,7 @@ curl -X POST http://localhost:8088/api/orders \
 ```json
 {
   "id": "b3f1c2d4-e5a6-7890-bcde-f12345678901",
-  "customerName": "John Doe",
+  "customerId": "b3f1c2d4-e5a6-7890-bcde-f12345678901",
   "itemName": "Latte",
   "quantity": 2,
   "price": 5.99,
@@ -213,7 +214,7 @@ curl http://localhost:8088/api/orders/b3f1c2d4-e5a6-7890-bcde-f12345678901
 ```json
 {
   "id": "b3f1c2d4-e5a6-7890-bcde-f12345678901",
-  "customerName": "John Doe",
+  "customerName": "b3f1c2d4-e5a6-7890-bcde-f12345678901",
   "itemName": "Latte",
   "quantity": 2,
   "price": 5.99,
@@ -265,7 +266,7 @@ curl http://localhost:8088/api/orders/00000000-0000-0000-0000-000000000000
 ```bash
 curl -X POST http://localhost:8088/api/orders \
   -H "Content-Type: application/json" \
-  -d '{"customerName": "", "itemName": "", "quantity": 0, "price": -1}'
+  -d '{"customerId": "", "itemName": "", "quantity": 0, "price": -1}'
 ```
 ```json
 {"message": "customerName: must not be blank|\nitemName: must not be blank|\nquantity: must be greater than or equal to 1|\nprice: must be greater than 0"}

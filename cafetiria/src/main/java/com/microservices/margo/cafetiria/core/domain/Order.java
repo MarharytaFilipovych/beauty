@@ -13,9 +13,6 @@ import java.util.UUID;
 public record Order(
         UUID id,
 
-        @NotBlank(message = "Customer name must be specified.")
-        String customerName,
-
         @NotBlank(message = "Item name must be specified.")
         String itemName,
 
@@ -25,6 +22,9 @@ public record Order(
         @NotNull(message = "Price name must be specified.")
         @PositiveOrZero(message = "Price cannot be negative.")
         BigDecimal price,
+
+        @NotNull(message = "Customer id is required.")
+        UUID customerId,
 
         OrderStatus status,
         LocalDateTime createdAt

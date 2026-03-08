@@ -43,7 +43,7 @@ class OrderTest {
     private Order pendingOrder() {
         return Order.builder()
                 .id(UUID.randomUUID())
-                .customerName("John Doe")
+                .customerId(UUID.randomUUID())
                 .itemName("Latte")
                 .quantity(2)
                 .price(new BigDecimal("5.99"))
@@ -54,10 +54,6 @@ class OrderTest {
 
     private Order orderWithStatus(OrderStatus status) {
         return pendingOrder().toBuilder().status(status).build();
-    }
-
-    private <T> Set<ConstraintViolation<Order>> validate(Order order) {
-        return validator.validate(order);
     }
 
     private Set<String> violationMessages(Order order) {
@@ -72,7 +68,7 @@ class OrderTest {
         // Arrange & Act
         Order order = Order.builder()
                 .id(UUID.randomUUID())
-                .customerName("John Doe")
+                .customerId(UUID.randomUUID())
                 .itemName("Latte")
                 .quantity(1)
                 .price(BigDecimal.ONE)
@@ -201,7 +197,7 @@ class OrderTest {
 
         // Assert
         assertThat(updated.id()).isEqualTo(original.id());
-        assertThat(updated.customerName()).isEqualTo(original.customerName());
+        assertThat(updated.customerId()).isEqualTo(original.customerId());
         assertThat(updated.itemName()).isEqualTo(original.itemName());
         assertThat(updated.quantity()).isEqualTo(original.quantity());
         assertThat(updated.price()).isEqualByComparingTo(original.price());
@@ -221,19 +217,17 @@ class OrderTest {
         assertThat(violations).isEmpty();
     }
 
-    @ParameterizedTest
-    @EmptySource
-    @NullSource
-    @DisplayName("does not allow blank/null customerName")
-    void customerName_isInvalid(String name) {
+    @Test
+    @DisplayName("does not allow null customerId")
+    void customerId_isNull() {
         // Arrange
-        Order order = pendingOrder().toBuilder().customerName(name).build();
+        Order order = pendingOrder().toBuilder().customerId(null).build();
 
         // Act
         Set<String> messages = violationMessages(order);
 
         // Assert
-        assertThat(messages).contains("Customer name must be specified.");
+        assertThat(messages).contains("Customer id is required.");
     }
 
     @ParameterizedTest
@@ -337,7 +331,7 @@ class OrderTest {
     void multipleViolations_shouldBeReportedTogether() {
         // Arrange
         Order order = pendingOrder().toBuilder()
-                .customerName("")
+                .customerId(null)
                 .itemName("")
                 .quantity(0)
                 .price(new BigDecimal("-1"))
@@ -348,7 +342,7 @@ class OrderTest {
 
         // Assert
         assertThat(messages).containsExactlyInAnyOrder(
-                "Customer name must be specified.",
+                "Customer id is required.",
                 "Item name must be specified.",
                 "Quantity must be at least 1.",
                 "Price cannot be negative."

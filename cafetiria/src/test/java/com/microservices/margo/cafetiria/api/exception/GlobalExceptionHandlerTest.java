@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
@@ -15,6 +16,8 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -244,6 +247,23 @@ class GlobalExceptionHandlerTest {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(UNSUPPORTED_MEDIA_TYPE);
         assertThat(response.getBody()).isEqualTo(exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("returns correct status and reason for ResponseStatusException")
+    void handleResponseStatus_returnsCorrectStatusAndReason() {
+        // Arrange
+        ResponseStatusException exception = new ResponseStatusException(
+                HttpStatus.SERVICE_UNAVAILABLE, "Service is unavailable");
+
+        // Act
+        ResponseEntity<?> response = handler.handleResponseStatus(exception);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+        assertNotNull(response.getBody());
+        assertThat(((ErrorResponse) response.getBody()).message())
+                .isEqualTo("Service is unavailable");
     }
 
     private MethodArgumentNotValidException buildMethodArgumentNotValidException(

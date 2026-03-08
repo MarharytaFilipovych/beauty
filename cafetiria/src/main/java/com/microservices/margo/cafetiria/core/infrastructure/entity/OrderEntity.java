@@ -28,9 +28,6 @@ public class OrderEntity {
     @UuidGenerator
     private UUID id;
 
-    @Column(name = "customer_name", nullable = false)
-    private String customerName;
-
     @Column(name = "item_name", nullable = false)
     private String itemName;
 
@@ -43,6 +40,9 @@ public class OrderEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;
+
+    @Column(name = "customer_id", nullable = false)
+    private UUID customerId;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

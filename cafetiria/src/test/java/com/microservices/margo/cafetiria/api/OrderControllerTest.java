@@ -18,9 +18,12 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -51,6 +54,7 @@ class OrderControllerTest {
     private UpdateOrderStatusUseCase updateStatus;
 
     private static final UUID ORDER_ID = UUID.randomUUID();
+    private static final UUID CUSTOMER_ID = UUID.randomUUID();
     private static final String ORDERS_PATH = "/orders";
     private static final String ORDERS_ID_PATH = ORDERS_PATH + "/{id}";
     private static final String ORDERS_ID_PATH_STATUS = ORDERS_ID_PATH + "/status";
@@ -58,7 +62,7 @@ class OrderControllerTest {
     private Order sampleOrder() {
         return Order.builder()
                 .id(ORDER_ID)
-                .customerName("John Doe")
+                .customerId(CUSTOMER_ID)
                 .itemName("Latte")
                 .quantity(2)
                 .price(new BigDecimal("5.99"))
@@ -70,8 +74,8 @@ class OrderControllerTest {
     @Test
     void create_shouldReturn201_whenValidRequest() throws Exception {
         // Arrange
-        CreateOrderRequest request = new CreateOrderRequest("John Doe",
-                "Latte", 2, new BigDecimal("5.99"));
+        CreateOrderRequest request = new CreateOrderRequest(
+                "Latte", 2, new BigDecimal("5.99"), CUSTOMER_ID);
         Order order = sampleOrder();
 
         when(createOrder.execute(request)).thenReturn(order);
@@ -83,16 +87,30 @@ class OrderControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
                 .andExpect(jsonPath("$.id").value(ORDER_ID.toString()))
-                .andExpect(jsonPath("$.customerName").value(request.customerName()))
+                .andExpect(jsonPath("$.customerId").value(request.customerId().toString()))
                 .andExpect(jsonPath("$.status").value(OrderStatus.PENDING.name()));
     }
 
     @Test
-    void create_shouldReturn400_whenCustomerNameIsBlank() throws Exception {
+    void create_shouldReturn400_whenCustomerIdIsNull() throws Exception {
         // Arrange
-        CreateOrderRequest request = new CreateOrderRequest("", "Latte",
-                2, new BigDecimal("5.99"));
+        CreateOrderRequest request = new CreateOrderRequest( "Latte",
+                2, new BigDecimal("5.99"), null);
 
+        // Act & Assert
+        mockMvc.perform(post(ORDERS_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void create_shouldReturn400_whenCustomerIdINotFound() throws Exception {
+        // Arrange
+        CreateOrderRequest request = new CreateOrderRequest(
+                "Latte", 2, new BigDecimal("5.99"), CUSTOMER_ID);
+        doThrow(new IllegalArgumentException("User not found"))
+                .when(createOrder).execute(any());
         // Act & Assert
         mockMvc.perform(post(ORDERS_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -104,8 +122,8 @@ class OrderControllerTest {
     void create_shouldReturn400_whenQuantityIsLessThanOne() throws Exception {
         // Arrange
         @SuppressWarnings("DataFlowIssue")
-        CreateOrderRequest request = new CreateOrderRequest("John Doe", "Latte",
-                0, new BigDecimal("5.99"));
+        CreateOrderRequest request = new CreateOrderRequest("Latte",
+                0, new BigDecimal("5.99"), UUID.randomUUID());
 
         // Act & Assert
         mockMvc.perform(post(ORDERS_PATH)
@@ -117,8 +135,8 @@ class OrderControllerTest {
     @Test
     void create_shouldReturn400_whenPriceIsNull() throws Exception {
         // Arrange
-        CreateOrderRequest request = new CreateOrderRequest("John Doe", "Latte",
-                2, null);
+        CreateOrderRequest request = new CreateOrderRequest("Latte",
+                2, null, UUID.randomUUID());
 
         // Act & Assert
         mockMvc.perform(post(ORDERS_PATH)
@@ -130,8 +148,8 @@ class OrderControllerTest {
     @Test
     void create_shouldReturn400_whenItemNameIsBlank() throws Exception {
         // Arrange
-        CreateOrderRequest request = new CreateOrderRequest("John Doe", "",
-                2, new BigDecimal("5.99"));
+        CreateOrderRequest request = new CreateOrderRequest("",
+                2, new BigDecimal("5.99"), UUID.randomUUID());
 
         // Act & Assert
         mockMvc.perform(post(ORDERS_PATH)
@@ -143,8 +161,8 @@ class OrderControllerTest {
     @Test
     void create_shouldReturn400_whenPriceIsNegative() throws Exception {
         // Arrange
-        CreateOrderRequest request = new CreateOrderRequest("John Doe", "Latte",
-                2, new BigDecimal("-1.00"));
+        CreateOrderRequest request = new CreateOrderRequest("Latte",
+                2, new BigDecimal("-1.00"), UUID.randomUUID());
 
         // Act & Assert
         mockMvc.perform(post(ORDERS_PATH)
@@ -170,7 +188,7 @@ class OrderControllerTest {
         mockMvc.perform(get(ORDERS_ID_PATH, ORDER_ID))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ORDER_ID.toString()))
-                .andExpect(jsonPath("$.customerName").value(sampleOrder().customerName()))
+                .andExpect(jsonPath("$.customerId").value(CUSTOMER_ID.toString()))
                 .andExpect(jsonPath("$.status").value(OrderStatus.PENDING.name()));
     }
 
