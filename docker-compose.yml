@@ -14,7 +14,7 @@ services:
     networks:
       - cafetiria-network
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d orders" ]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d orders"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -58,7 +58,13 @@ services:
       order-db:
         condition: service_healthy
       user-service:
-        condition: service_started
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8088/api/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
 
   user-service:
     container_name: user-service
@@ -77,6 +83,12 @@ services:
     depends_on:
       user-db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/api/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
 
   gateway:
     container_name: gateway
@@ -92,8 +104,10 @@ services:
     networks:
       - cafetiria-network
     depends_on:
-      - user-service
-      - order-service
+      order-service:
+        condition: service_healthy
+      user-service:
+        condition: service_healthy
 
 networks:
   cafetiria-network:

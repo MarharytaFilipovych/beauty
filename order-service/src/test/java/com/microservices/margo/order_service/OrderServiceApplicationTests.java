@@ -10,7 +10,7 @@ import org.springframework.test.context.TestPropertySource;
         "spring.jpa.hibernate.ddl-auto=none",
         "spring.datasource.url=jdbc:h2:mem:testdb"
 })
-class CafetiriaDeliveryApplicationTests {
+class OrderServiceApplicationTests {
 
 	@Test
 	void contextLoads() {
