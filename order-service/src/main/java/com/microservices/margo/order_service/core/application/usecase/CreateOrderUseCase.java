@@ -5,7 +5,7 @@ import com.microservices.margo.order_service.core.application.mapper.OrderMapper
 import com.microservices.margo.order_service.core.domain.Order;
 import com.microservices.margo.order_service.core.infrastructure.client.UserValidationClient;
 import com.microservices.margo.order_service.core.infrastructure.entity.OrderEntity;
-import com.microservices.margo.order_service.core.infrastructure.messaging.OrderEventPublisher;
+import com.microservices.margo.order_service.core.infrastructure.publisher.OrderEventPublisher;
 import com.microservices.margo.order_service.core.infrastructure.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

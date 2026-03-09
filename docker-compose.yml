@@ -1,4 +1,60 @@
 services:
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3-management
+    platform: linux/arm64
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - cafetiria-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  notification-db:
+    container_name: notification-db
+    image: postgres:16
+    platform: linux/arm64
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: notifications
+    ports:
+      - "5434:5432"
+    volumes:
+      - notification-db-data:/var/lib/postgresql/data
+    networks:
+      - cafetiria-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d notifications"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  notification-service:
+    container_name: notification-service
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    platform: linux/arm64
+    environment:
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_URL: jdbc:postgresql://notification-db:5432/notifications
+      RABBITMQ_HOST: rabbitmq
+    ports:
+      - "8090:8090"
+    networks:
+      - cafetiria-network
+    depends_on:
+      notification-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
   order-db:
     container_name: order-db
     image: postgres:16
@@ -50,6 +106,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_URL: jdbc:postgresql://order-db:5432/orders
       USERS_URL: http://user-service:8080/api/users/
+      RABBITMQ_HOST: rabbitmq
     ports:
       - "8088:8088"
     networks:
@@ -58,6 +115,8 @@ services:
       order-db:
         condition: service_healthy
       user-service:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider http://localhost:8088/api/actuator/health || exit 1"]
@@ -116,3 +175,4 @@ networks:
 volumes:
   order-db-data:
   user-db-data:
+  notification-db-data:
