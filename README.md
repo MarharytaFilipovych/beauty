@@ -1,4 +1,4 @@
-# Gateway
+# Microservices
 
 **Gateway** is the single entry point for the Cafetiria distributed system. It routes incoming requests to the appropriate downstream services and propagates the `X-Correlation-Id` header across all calls.
 
