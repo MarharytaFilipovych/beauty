@@ -1,4 +1,21 @@
 spring:
-  application.name=workflow-service
+  application.name: Workflow Service
+  datasource:
+    password: ${DB_PASSWORD}
+    url: ${DB_URL}
+    username: ${DB_USER}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database: postgresql
+    properties.hibernate.ddl-auto: validate
+  web:
+    resources:
+      add-mappings: false
+
+management.endpoint.health.show-details: always
 server:
+  servlet.context-path: /api
   port: 8091
+
+order.service.url: ${ORDER_SERVICE_URL:http://localhost:8088}
+payment.service.url: ${PAYMENT_SERVICE_URL:http://localhost:8093}

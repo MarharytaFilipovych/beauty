@@ -1,4 +1,4 @@
-package com.microservices.margo.order_service.core.infrastructure.config;
+package com.microservices.margo.workflow_service.core.infrastructure.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -11,8 +11,8 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI(){
         return new OpenAPI().info(new Info()
-                        .title("Order Service API")
-                        .description("API for managing orders")
+                        .title("Workflow Service API")
+                        .description("Saga / Process Manager for place-order workflow")
                         .version("1.0.0"));
     }
 }
