@@ -25,6 +25,6 @@ server:
 user-service.users-url: ${USERS_URL:http:/localhost:8080/api/users}
 
 rabbitmq:
-  exchange: core
+  exchange: order
   queue: order.created
-  routing-key: core-item.created
+  routing-key: order.created
