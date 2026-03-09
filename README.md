@@ -21,9 +21,11 @@ Routes:
 |---------------------------|---------------------------------------|
 | `POST /orders`            | `POST http://order-service:8088/api/orders`          |
 | `GET /orders/{id}`        | `GET http://order-service:8088/api/orders/{id}`      |
+| `GET /health/orders`        | `GET http://order-service:8088/api/health`      |
 | `PATCH /orders/{id}/status` | `PATCH http://order-service:8088/api/orders/{id}/status` |
 | `POST /users`             | `POST http://user-service:8080/api/users`            |
 | `GET /users/{id}`         | `GET http://user-service:8080/api/users/{id}`        |
+| `GET /health/users`         | `GET http://user-service:8080/api/health`        |
 
 ---
 
