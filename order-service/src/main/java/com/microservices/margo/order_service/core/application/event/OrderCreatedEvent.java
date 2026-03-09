@@ -1,4 +1,4 @@
-package com.microservices.margo.order_service.core.infrastructure.messaging;
+package com.microservices.margo.order_service.core.application.event;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -9,5 +9,5 @@ public record OrderCreatedEvent(
         UUID correlationId,
         UUID orderId,
         UUID ownerUserId,
-        String summary
+        String payload
 ) {}

@@ -1,7 +1,8 @@
-package com.microservices.margo.order_service.core.infrastructure.messaging;
+package com.microservices.margo.order_service.core.infrastructure.publisher;
 
 import com.microservices.margo.order_service.core.domain.Order;
 import com.microservices.margo.order_service.core.infrastructure.config.RabbitMQProperties;
+import com.microservices.margo.order_service.core.application.event.OrderCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
