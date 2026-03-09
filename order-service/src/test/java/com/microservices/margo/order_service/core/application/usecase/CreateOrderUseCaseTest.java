@@ -5,6 +5,7 @@ import com.microservices.margo.order_service.core.application.request.CreateOrde
 import com.microservices.margo.order_service.core.domain.Order;
 import com.microservices.margo.order_service.core.infrastructure.client.UserValidationClient;
 import com.microservices.margo.order_service.core.infrastructure.entity.OrderEntity;
+import com.microservices.margo.order_service.core.infrastructure.publisher.OrderEventPublisher;
 import com.microservices.margo.order_service.core.infrastructure.repository.OrderRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,16 +18,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.UUID;
+
 import static com.microservices.margo.order_service.TestData.buildEntity;
 import static com.microservices.margo.order_service.TestData.buildOrder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @DisplayName("CreateOrderUseCase tests")
 @ExtendWith(MockitoExtension.class)
@@ -41,15 +39,16 @@ class CreateOrderUseCaseTest {
     @Mock
     private UserValidationClient userValidationClient;
 
+    @Mock
+    private OrderEventPublisher eventPublisher;
+
     @InjectMocks
     private CreateOrderUseCase createOrderUseCase;
 
     @Test
-    void execute_shouldSaveOrderAndReturnDomainWhenUserFound() {
+    void execute_shouldSaveOrderAndPublishEventWhenUserFound() {
         // Arrange
-        CreateOrderRequest request = new CreateOrderRequest( "Laptop",
-                1, new BigDecimal("1499.99"), UUID.randomUUID());
-
+        CreateOrderRequest request = new CreateOrderRequest("Laptop", 1, new BigDecimal("1499.99"), UUID.randomUUID());
         OrderEntity entity = buildEntity(UUID.randomUUID());
         OrderEntity savedEntity = buildEntity(entity.getId());
         Order expectedOrder = buildOrder(entity.getId());
@@ -63,17 +62,14 @@ class CreateOrderUseCaseTest {
 
         // Assert
         assertThat(result).isEqualTo(expectedOrder);
-        verify(orderMapper).toEntity(request);
         verify(orderRepository, times(1)).save(entity);
-        verify(orderMapper).toDomain(savedEntity);
+        verify(eventPublisher).publishOrderCreated(expectedOrder);
     }
 
     @Test
     void execute_shouldThrowAndNotSaveWhenUserNotFound() {
         // Arrange
-        CreateOrderRequest request = new CreateOrderRequest(
-                "Laptop", 1, new BigDecimal("1499.99"), UUID.randomUUID());
-
+        CreateOrderRequest request = new CreateOrderRequest("Laptop", 1, new BigDecimal("1499.99"), UUID.randomUUID());
         doThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found"))
                 .when(userValidationClient).validateUserExists(request.ownerUserId());
 
@@ -83,6 +79,6 @@ class CreateOrderUseCaseTest {
                 .hasMessageContaining("User not found");
 
         verify(orderRepository, never()).save(any());
-        verify(orderMapper, never()).toEntity(any(CreateOrderRequest.class));
+        verify(eventPublisher, never()).publishOrderCreated(any());
     }
 }

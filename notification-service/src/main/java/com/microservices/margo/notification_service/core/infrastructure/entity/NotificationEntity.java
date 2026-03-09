@@ -23,8 +23,7 @@ import java.util.UUID;
 @Builder
 public class NotificationEntity {
     @Id
-    @UuidGenerator
-    @Column(name = "event_id")
+    @Column(name = "event_id", nullable = false, updatable = false)
     private UUID eventId;
 
     @Column(name = "correlation_id")
