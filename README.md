@@ -237,3 +237,81 @@ curl -X POST http://localhost:8081/orders \
 ```
 
 Requests that do not depend on User Service (e.g. `GET /orders/{id}`, `PATCH /orders/{id}/status`) will continue to work normally.
+
+## Messaging
+
+### Event Contract
+
+**Event name:** `order.created`  
+**Exchange:** `order` (topic)  
+**Routing key:** `order.created`  
+**Queue:** `order.created`
+
+**Payload example:**
+```json
+{
+  "eventId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "occurredAt": "2024-03-01T10:00:00Z",
+  "correlationId": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+  "orderId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+  "ownerUserId": "d4e5f6a7-b8c9-0123-defa-234567890123",
+  "payload": "Order created: Latte x2 @ 5.99"
+}
+```
+
+---
+
+### How to Verify Messages
+
+1. Start all services:
+```bash
+docker compose up --build
+```
+
+2. Open RabbitMQ Management UI at `http://localhost:15672`  
+   - Username: `guest`  
+   - Password: `guest`
+
+3. Create an order:
+```bash
+curl -X POST http://localhost:8081/orders \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ownerUserId": "<valid-user-id>",
+    "itemName": "Latte",
+    "quantity": 2,
+    "price": 5.99
+  }'
+```
+
+4. In RabbitMQ UI navigate to **Queues → order.created** and verify the message was consumed.
+
+5. Check the notification was stored:
+```bash
+docker exec -it notification-db psql -U postgres -d notifications \
+  -c "SELECT * FROM notifications;"
+```
+6. Check notification-service logs: 
+```bash
+docker logs notification-service
+```
+---
+
+### Troubleshooting
+
+**Messages are not appearing in the queue:**
+- Verify RabbitMQ is healthy: `docker ps` — check `rabbitmq` container status
+- Check order-service logs: `docker logs order-service`
+- Confirm that the exchange `order` and the queue `order.created` exist in RabbitMQ UI under **Exchanges** and **Queues**
+
+**Notification not stored:**
+- Check notification-service logs: `docker logs notification-service`
+- Verify the binding between the exchange `order` and the queue `order.created` with the routing key `order.created` exists in RabbitMQ UI under **Exchanges → order → Bindings**
+
+**Duplicate events:**
+Idempotency is enforced via unique constraint on `event_id` (it is a primary key) in the `notifications` table
+Hence, duplicate events are silently ignored. You may check logs for `Duplicate eventId=..., ignoring`, `Error message: ...`.
+
+**Services not connecting to RabbitMQ:**
+- Ensure `RABBITMQ_HOST=rabbitmq` is set in the environment
+- RabbitMQ must be healthy before order-service and notification-service start. You should check `depends_on` section in `docker-compose.yml`
