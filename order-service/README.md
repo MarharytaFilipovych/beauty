@@ -28,11 +28,13 @@ src/main/java/com/cafeteria/:
     * request/ -> Request DTOs: CreateOrderRequest, UpdateOrderStatusRequest
     * usecase/ -> CreateOrderUseCase, GetOrderUseCase, UpdateOrderStatusUseCase
     * mapper/ -> OrderMapper
+    * event/ -> OrderCreatedEvent
   * infrastructure/
     * entity/ -> JPA OrderEntity
     * repository/ -> JPA OrderRepository interface
-    * config/ -> ObjectMapperConfig, SwaggerConfig, RestClientConfig
+    * config/ -> ObjectMapperConfig, SwaggerConfig, RestClientConfig, RabbitMQConfig, RabbitMQProperties
     * client/ -> UserValidationClient
+    * publisher/ -> OrderEventPublisher
 
 Two migration were applied, which encapsulated **orders** table creation and then its alteration (the removal of the customer name column and the addition of the customer id instead). It is located within _/src/main/resources/db/migration/V1__create_orders_table.sql_.
 ---
@@ -121,6 +123,7 @@ The API will be available at `http://localhost:8088`.
 * `OrderTest` — 41 unit tests
 * `OrderStatusTest` - 16 unit tests
 * `GlobalExceptionHandlerTest` — 16 unit tests
+* `OrderEventPublisherTest` - 1 unit test
 ---
 
 ---
@@ -291,3 +294,34 @@ curl -X PATCH http://localhost:8088/api/orders/bd193441-2520-4392-a0aa-195000965
 {"message":"Invalid JSON format in request body"}
 ```
 ---
+
+## Messaging
+
+RabbitMQ is used to publish events after successful order creation.
+
+- **Exchange:** `order` (topic)
+- **Routing key:** `order.created`
+- **Queue:** `order.created`
+
+### Event Payload Example
+
+```json
+{
+  "eventId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "occurredAt": "2024-03-01T10:00:00Z",
+  "correlationId": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+  "orderId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+  "ownerUserId": "d4e5f6a7-b8c9-0123-defa-234567890123",
+  "payload": "Order created: Latte x2 @ 5.99"
+}
+```
+
+### Environment Variables
+
+| Variable          | Default     | Description              |
+|-------------------|-------------|--------------------------|
+| `RABBITMQ_HOST`   | `localhost` | RabbitMQ host            |
+| `RABBITMQ_PORT`   | `5672`      | RabbitMQ AMQP port       |
+| `RABBITMQ_USER`   | `guest`     | RabbitMQ username        |
+| `RABBITMQ_PASSWORD` | `guest`   | RabbitMQ password        |
+```
