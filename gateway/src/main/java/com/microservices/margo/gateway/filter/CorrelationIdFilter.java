@@ -7,18 +7,12 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.function.HandlerFilterFunction;
-import org.springframework.web.servlet.function.ServerResponse;
 
 import java.io.IOException;
 import java.util.UUID;
 
 @Component
-@Order(1)
 public class CorrelationIdFilter implements Filter {
 
     public static final String CORRELATION_ID_HEADER = "X-Correlation-Id";
