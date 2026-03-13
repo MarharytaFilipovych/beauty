@@ -41,6 +41,10 @@ public class StartCreateOrderWorkflowUseCase {
 
         workflow = confirmOrder(workflow, orderId);
 
+        if (workflow.state() != WorkflowState.ORDER_CONFIRMED) {
+            return workflow;
+        }
+
         return save(workflow.transitionTo(WorkflowState.COMPLETED));
     }
 
