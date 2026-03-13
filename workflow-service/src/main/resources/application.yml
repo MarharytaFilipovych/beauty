@@ -17,5 +17,15 @@ server:
   servlet.context-path: /api
   port: 8091
 
-order.service.url: ${ORDER_SERVICE_URL:http://localhost:8088}
-payment.service.url: ${PAYMENT_SERVICE_URL:http://localhost:8093}
+order.service:
+  url:
+    base: ${ORDER_SERVICE_URL:http://localhost:8088}
+    create-order: /api/orders
+    change-status: /api/orders/{id}/status
+  params:
+    ownerUserId: ownerUserId
+    itemName: itemName
+    quantity: quantity
+    price: price
+    newStatus: newStatus
+    id: id
