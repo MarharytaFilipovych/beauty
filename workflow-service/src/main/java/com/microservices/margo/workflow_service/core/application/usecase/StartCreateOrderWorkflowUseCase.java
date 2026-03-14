@@ -50,12 +50,9 @@ public class StartCreateOrderWorkflowUseCase {
 
     private Workflow createWorkflow(CreateOrderRequest request){
         return Workflow.builder()
-                .id(UUID.randomUUID())
                 .type(WorkflowType.CREATE_ORDER.toString())
                 .state(WorkflowState.STARTED)
                 .payload(request.toString())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .build();
     }
 

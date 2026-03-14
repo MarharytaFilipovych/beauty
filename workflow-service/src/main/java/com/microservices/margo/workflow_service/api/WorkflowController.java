@@ -24,7 +24,7 @@ public class WorkflowController {
     private final StartCreateOrderWorkflowUseCase startPlaceOrderWorkflow;
     private final GetWorkflowUseCase getWorkflow;
 
-    @PostMapping("/place-order")
+    @PostMapping("/create-order")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public Workflow startPlaceOrder(@Valid @RequestBody CreateOrderRequest request) {
         return startPlaceOrderWorkflow.execute(request);

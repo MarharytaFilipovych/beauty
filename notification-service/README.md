@@ -112,12 +112,12 @@ docker exec -it notification-db psql -U postgres -d notifications \
 
 ## Environment Variables
 
-| Variable            | Default     | Description          |
-|---------------------|-------------|----------------------|
-| `DB_URL`            | —           | JDBC datasource URL  |
-| `DB_USER`           | —           | Database username    |
-| `DB_PASSWORD`       | —           | Database password    |
-| `RABBITMQ_HOST`     | `localhost` | RabbitMQ host        |
-| `RABBITMQ_PORT`     | `5672`      | RabbitMQ AMQP port   |
-| `RABBITMQ_USER`     | `guest`     | RabbitMQ username    |
-| `RABBITMQ_PASSWORD` | `guest`     | RabbitMQ password    |
+| Variable          | Default     | Description            |
+|-------------------|-------------|------------------------|
+| `DB_URL`          | —           | JDBC datasource URL    |
+| `DB_USER`         | —           | Database username      |
+| `DB_PASSWORD`     | —           | Database password      |
+| `RABBITMQ_HOST`   | `localhost` | RabbitMQ host          |
+| `RABBIT_PORT`     | `5672`      | RabbitMQ AMQP port     |
+| `RABBITMQ_USER`   | `guest`     | RabbitMQ username      |
+| `RABBITMQ_PASSWORD` | `guest`     | RabbitMQ password      |

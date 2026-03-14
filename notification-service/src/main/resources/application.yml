@@ -12,7 +12,7 @@ spring:
 
   rabbitmq:
     host: ${RABBITMQ_HOST:localhost}
-    port: ${RABBITMQ_PORT:5672}
+    port: ${RABBIT_PORT:5672}
     username: ${RABBITMQ_USER:guest}
     password: ${RABBITMQ_PASSWORD:guest}
 
@@ -22,3 +22,11 @@ rabbitmq:
   routing-key: order.created
 server:
   port: 8090
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  health:
+    rabbit:
+      enabled: false

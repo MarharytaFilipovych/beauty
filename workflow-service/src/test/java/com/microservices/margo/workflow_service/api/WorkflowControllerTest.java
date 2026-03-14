@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("WorkflowController tests")
 class WorkflowControllerTest {
     private static final String WORKFLOWS_PATH = "/workflows";
-    private static final String PLACE_ORDER_URL = WORKFLOWS_PATH + "/place-order";
+    private static final String PLACE_ORDER_URL = WORKFLOWS_PATH + "/create-order";
     private static final String GET_BY_ID_URL = WORKFLOWS_PATH + "/{workflowId}";
 
     @Autowired
@@ -46,8 +46,8 @@ class WorkflowControllerTest {
     private GetWorkflowUseCase getWorkflow;
 
     @Test
-    @DisplayName("POST /workflows/place-order returns 202 with workflow")
-    void startPlaceOrder_returns202_withWorkflow() throws Exception {
+    @DisplayName("POST /workflows/create-order returns 202 with workflow")
+    void startCreateOrder_returns202_withWorkflow() throws Exception {
         // Arrange
         CreateOrderRequest request = new CreateOrderRequest(OWNER_ID, "Latte", 2, BigDecimal.valueOf(5.99));
         Workflow workflow = buildWorkflow(WorkflowState.COMPLETED);
@@ -63,8 +63,8 @@ class WorkflowControllerTest {
     }
 
     @Test
-    @DisplayName("POST /workflows/place-order returns 400 when request is invalid")
-    void startPlaceOrder_returns400_whenRequestInvalid() throws Exception {
+    @DisplayName("POST /workflows/create-order returns 400 when request is invalid")
+    void startCreateOrder_returns400_whenRequestInvalid() throws Exception {
         // Arrange
         String invalidBody = """
                 {"ownerUserId": null, "itemName": "", "quantity": 0, "price": -1}

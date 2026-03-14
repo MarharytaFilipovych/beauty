@@ -1,6 +1,6 @@
 # Workflow Service
 
-**Workflow Service** orchestrates the *Place Order* saga for the Cafetiria distributed system.  
+**Workflow Service** orchestrates the *Create Order* saga for the Cafetiria distributed system.  
 It drives the full lifecycle: create order → confirm order → compensate on failure, and persists each step as a `WorkflowState` in its own database.
 
 ---
@@ -164,7 +164,7 @@ curl http://localhost:8091/api/health
 
 ## API Curl Examples
 
-### Start a workflow (Place Order saga)
+### Start a workflow (Create Order saga)
 
 ```bash
 curl -X POST http://localhost:8091/api/workflows \
@@ -179,7 +179,7 @@ curl -X POST http://localhost:8091/api/workflows \
 
 Here is the corrected section:
 
-### Start a workflow (Place Order saga)
+### Start a workflow (Create Order saga)
 
 ```bash
 curl -X POST http://localhost:8091/api/workflows \

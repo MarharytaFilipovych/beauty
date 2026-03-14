@@ -318,10 +318,10 @@ RabbitMQ is used to publish events after successful order creation.
 
 ### Environment Variables
 
-| Variable          | Default     | Description              |
-|-------------------|-------------|--------------------------|
-| `RABBITMQ_HOST`   | `localhost` | RabbitMQ host            |
-| `RABBITMQ_PORT`   | `5672`      | RabbitMQ AMQP port       |
-| `RABBITMQ_USER`   | `guest`     | RabbitMQ username        |
+| Variable        | Default     | Description              |
+|-----------------|-------------|--------------------------|
+| `RABBITMQ_HOST` | `localhost` | RabbitMQ host            |
+| `RABBIT_PORT`   | `5672`      | RabbitMQ AMQP port       |
+| `RABBITMQ_USER` | `guest`     | RabbitMQ username        |
 | `RABBITMQ_PASSWORD` | `guest`   | RabbitMQ password        |
 ```

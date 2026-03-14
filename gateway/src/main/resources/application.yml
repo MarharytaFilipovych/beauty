@@ -35,6 +35,13 @@ spring:
               filters:
                 - RewritePath=/users(?:/(?<segment>.+))?, /api/users/$\{segment}
 
+            - id: workflow-service
+              uri: ${WORKFLOW_SERVICE_URL:http://localhost:8091}
+              predicates:
+                - Path=/workflows/**
+              filters:
+                - RewritePath=/workflows(?:/(?<segment>.+))?, /api/workflows/$\{segment}
+
 server:
   port: 8081
 
