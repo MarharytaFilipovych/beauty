@@ -48,7 +48,7 @@ public class OrderServiceClient {
 
     public void confirmOrder(UUID orderId) {
         restClient.patch()
-                .uri(url.base() + url.changeStatus() + orderId)
+                .uri(url.base() + url.changeStatus(), orderId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Map.of(params.newStatus(), OrderStatus.CONFIRMED))
                 .retrieve()
@@ -58,7 +58,7 @@ public class OrderServiceClient {
 
     public void cancelOrder(UUID orderId) {
         restClient.patch()
-                .uri(url.base() + url.changeStatus() + orderId)
+                .uri(url.base() + url.changeStatus(), orderId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Map.of(params.newStatus(), OrderStatus.CANCELLED))
                 .retrieve()

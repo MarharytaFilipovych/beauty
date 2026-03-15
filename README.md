@@ -41,7 +41,7 @@ docker build -t gateway:latest ./gateway
 ## Start Minikube
 
 ```bash
-minilube start --memory=7000 --cpus=4
+minikube start --memory=4096 --cpus=2
 ```
 
 ## Load Images into Minikube
@@ -210,9 +210,10 @@ kubectl get endpoints
 ```bash
 kubectl describe ingress cafetiria-ingress
 ```
+
 **Not enough memory** -> increase minikube capacity like so:
 ```bash
 minikube stop
 minikube delete
-minikube start --memory=7000 --cpus=4
+minikube start --memory= --cpus=
 ```

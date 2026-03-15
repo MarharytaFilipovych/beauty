@@ -54,6 +54,7 @@ class OrderServiceClientTest {
         client = new OrderServiceClient(restClient, new OrderServiceProperties(url, params));
 
         doReturn(requestSpec).when(requestSpec).uri(anyString());
+        doReturn(requestSpec).when(requestSpec).uri(anyString(), any(Object[].class));
         doReturn(requestSpec).when(requestSpec).contentType(any());
         doReturn(requestSpec).when(requestSpec).body(any(Object.class));
         doReturn(responseSpec).when(requestSpec).retrieve();

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
 @RestController
-@RequestMapping({"/workflows/", "/workflows"})
+@RequestMapping("/workflows")
 @RequiredArgsConstructor
 public class WorkflowController {
     private final StartCreateOrderWorkflowUseCase startPlaceOrderWorkflow;
