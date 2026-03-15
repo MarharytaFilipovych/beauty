@@ -5,6 +5,7 @@ metadata:
 data:
   ORDER_SERVICE_URL: "http://order-service:8088"
   USER_SERVICE_URL: "http://user-service:8080"
+  USERS_URL: "http://user-service:8080/api/users/"
   NOTIFICATION_SERVICE_URL: "http://notification-service:8090"
   WORKFLOW_SERVICE_URL: "http://workflow-service:8091"
   RABBITMQ_HOST: "rabbitmq"

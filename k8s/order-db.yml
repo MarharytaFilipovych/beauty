@@ -21,6 +21,11 @@ spec:
           env:
             - name: POSTGRES_DB
               value: orders
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: cafetiria-secret
+                  key: DB_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -54,7 +59,6 @@ spec:
         resources:
           requests:
             storage: 1Gi
-
 ---
 apiVersion: v1
 kind: Service

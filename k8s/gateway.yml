@@ -12,6 +12,16 @@ spec:
       labels:
         app: gateway
     spec:
+      initContainers:
+        - name: wait-for-order-service
+          image: busybox
+          command: ['sh', '-c', 'until nc -z order-service 8088; do echo waiting for order-service; sleep 2; done']
+        - name: wait-for-user-service
+          image: busybox
+          command: ['sh', '-c', 'until nc -z user-service 8080; do echo waiting for user-service; sleep 2; done']
+        - name: wait-for-workflow-service
+          image: busybox
+          command: ['sh', '-c', 'until nc -z workflow-service 8091; do echo waiting for workflow-service; sleep 2; done']
       containers:
         - name: gateway
           image: gateway:latest
@@ -53,7 +63,6 @@ spec:
             limits:
               cpu: "300m"
               memory: "256Mi"
-
 ---
 apiVersion: v1
 kind: Service

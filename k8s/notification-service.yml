@@ -12,6 +12,13 @@ spec:
       labels:
         app: notification-service
     spec:
+      initContainers:
+        - name: wait-for-db
+          image: busybox
+          command: ['sh', '-c', 'until nc -z notification-db 5432; do echo waiting for notification-db; sleep 2; done']
+        - name: wait-for-rabbitmq
+          image: busybox
+          command: ['sh', '-c', 'until nc -z rabbitmq 5672; do echo waiting for rabbitmq; sleep 2; done']
       containers:
         - name: notification-service
           image: notification-service:latest
@@ -67,7 +74,6 @@ spec:
             limits:
               cpu: "500m"
               memory: "384Mi"
-
 ---
 apiVersion: v1
 kind: Service

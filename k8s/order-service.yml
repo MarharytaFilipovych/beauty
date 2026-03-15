@@ -12,6 +12,13 @@ spec:
       labels:
         app: order-service
     spec:
+      initContainers:
+        - name: wait-for-db
+          image: busybox
+          command: ['sh', '-c', 'until nc -z order-db 5432; do echo waiting for order-db; sleep 2; done']
+        - name: wait-for-rabbitmq
+          image: busybox
+          command: ['sh', '-c', 'until nc -z rabbitmq 5672; do echo waiting for rabbitmq; sleep 2; done']
       containers:
         - name: order-service
           image: order-service:latest
@@ -38,7 +45,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: cafetiria-config
-                  key: USER_SERVICE_URL
+                  key: USERS_URL
             - name: RABBITMQ_HOST
               valueFrom:
                 configMapKeyRef:
@@ -72,7 +79,6 @@ spec:
             limits:
               cpu: "500m"
               memory: "384Mi"
-
 ---
 apiVersion: v1
 kind: Service
