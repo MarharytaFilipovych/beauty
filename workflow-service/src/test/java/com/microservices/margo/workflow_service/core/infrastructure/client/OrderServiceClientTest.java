@@ -11,9 +11,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -23,6 +25,7 @@ import static com.microservices.margo.workflow_service.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -90,6 +93,19 @@ class OrderServiceClientTest {
     }
 
     @Test
+    @DisplayName("createOrder throws ResourceAccessException when service is unreachable")
+    void createOrder_throwsResourceAccessException_whenServiceUnreachable() {
+        // Arrange
+        CreateOrderRequest request = new CreateOrderRequest(OWNER_ID, "Latte", 2, BigDecimal.valueOf(5.99));
+        when(restClient.post()).thenReturn(requestSpec);
+        when(responseSpec.body(Map.class)).thenThrow(new ResourceAccessException("Connection refused"));
+
+        // Act & Assert
+        assertThatThrownBy(() -> client.createOrder(request))
+                .isInstanceOf(ResourceAccessException.class);
+    }
+
+    @Test
     @DisplayName("confirmOrder sends CONFIRMED status")
     void confirmOrder_sendsConfirmedStatus() {
         // Arrange
@@ -117,5 +133,45 @@ class OrderServiceClientTest {
         // Assert
         verify(requestSpec).body(Map.of("newStatus", OrderStatus.CANCELLED));
         verify(responseSpec).toBodilessEntity();
+    }
+
+    @Test
+    @DisplayName("createOrderFallback throws 503 after retries exhausted")
+    void createOrderFallback_throws503() {
+        // Arrange
+        CreateOrderRequest request = new CreateOrderRequest(OWNER_ID, "Latte", 2, BigDecimal.valueOf(5.99));
+        ResourceAccessException cause = new ResourceAccessException("timeout");
+
+        // Act & Assert
+        assertThatThrownBy(() -> client.createOrderFallback(cause, request))
+                .isInstanceOf(ResponseStatusException.class)
+                .extracting(e -> ((ResponseStatusException) e).getStatusCode())
+                .isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    @Test
+    @DisplayName("confirmOrderFallback throws 503 after retries exhausted")
+    void confirmOrderFallback_throws503() {
+        // Arrange
+        ResourceAccessException cause = new ResourceAccessException("timeout");
+
+        // Act & Assert
+        assertThatThrownBy(() -> client.confirmOrderFallback(cause, ORDER_ID))
+                .isInstanceOf(ResponseStatusException.class)
+                .extracting(e -> ((ResponseStatusException) e).getStatusCode())
+                .isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    @Test
+    @DisplayName("cancelOrderFallback throws 503 after retries exhausted")
+    void cancelOrderFallback_throws503() {
+        // Arrange
+        ResourceAccessException cause = new ResourceAccessException("timeout");
+
+        // Act & Assert
+        assertThatThrownBy(() -> client.cancelOrderFallback(cause, ORDER_ID))
+                .isInstanceOf(ResponseStatusException.class)
+                .extracting(e -> ((ResponseStatusException) e).getStatusCode())
+                .isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
     }
 }

@@ -5,8 +5,14 @@ import com.microservices.margo.workflow_service.core.domain.OrderStatus;
 import com.microservices.margo.workflow_service.core.infrastructure.config.OrderServiceProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.Map;
 import java.util.UUID;
@@ -25,6 +31,9 @@ public class OrderServiceClient {
         this.params = orderServiceProperties.getParams();
     }
 
+    @Retryable(retryFor = ResourceAccessException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.backoff-delay}"))
     public UUID createOrder(CreateOrderRequest request) {
         Map<?, ?> response = restClient.post()
                 .uri(url.base() + url.createOrder())
@@ -38,14 +47,16 @@ public class OrderServiceClient {
                 .retrieve()
                 .body(Map.class);
 
-        if (response == null){
+        if (response == null) {
             log.error("Received null response from order service.");
-            throw new RuntimeException("Failed to create order:(");
+            throw new RuntimeException("Failed to create order");
         }
-
         return UUID.fromString(response.get(params.id()).toString());
     }
 
+    @Retryable(retryFor = ResourceAccessException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.backoff-delay}"))
     public void confirmOrder(UUID orderId) {
         restClient.patch()
                 .uri(url.base() + url.changeStatus(), orderId)
@@ -56,6 +67,9 @@ public class OrderServiceClient {
         log.info("Order {} confirmed", orderId);
     }
 
+    @Retryable(retryFor = ResourceAccessException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.backoff-delay}"))
     public void cancelOrder(UUID orderId) {
         restClient.patch()
                 .uri(url.base() + url.changeStatus(), orderId)
@@ -64,5 +78,26 @@ public class OrderServiceClient {
                 .retrieve()
                 .toBodilessEntity();
         log.info("Compensation: order {} cancelled", orderId);
+    }
+
+    @Recover
+    public UUID createOrderFallback(ResourceAccessException e, CreateOrderRequest request) {
+        log.error("All retries exhausted for createOrder", e);
+        throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                "Order service is unavailable after retries");
+    }
+
+    @Recover
+    public void confirmOrderFallback(ResourceAccessException e, UUID orderId) {
+        log.error("All retries exhausted for confirmOrder orderId={}", orderId, e);
+        throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                "Order service is unavailable after retries");
+    }
+
+    @Recover
+    public void cancelOrderFallback(ResourceAccessException e, UUID orderId) {
+        log.error("All retries exhausted for cancelOrder orderId={}", orderId, e);
+        throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                "Order service is unavailable after retries");
     }
 }

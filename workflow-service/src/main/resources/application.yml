@@ -29,3 +29,7 @@ order.service:
     price: price
     newStatus: newStatus
     id: id
+
+retry:
+  maxAttempts: 3
+  backoff-delay: 300
