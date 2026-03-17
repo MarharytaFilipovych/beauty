@@ -10,6 +10,8 @@ import java.util.UUID;
 public class TestData {
     public static final UUID ORDER_ID = UUID.randomUUID();
     public static final UUID CUSTOMER_ID = UUID.randomUUID();
+    public static final String CORRELATION_ID_HEADER = "X-Correlation-Id";
+    public static final String MDC_KEY = "correlationId";
 
     public static OrderEntity buildEntity(UUID id) {
         return buildEntity(id, OrderStatus.PENDING);
