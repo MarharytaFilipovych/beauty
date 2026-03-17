@@ -34,3 +34,7 @@ rabbitmq:
   exchange: order
   queue: order.created
   routing-key: order.created
+
+correlation:
+  key: correlationId
+  header: X-Correlation-Id
