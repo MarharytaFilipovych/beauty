@@ -38,3 +38,7 @@ rabbitmq:
 correlation:
   key: correlationId
   header: X-Correlation-Id
+
+retry:
+  maxAttempts: 5
+  backoff-delay: 300

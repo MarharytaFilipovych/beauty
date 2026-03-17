@@ -1,13 +1,13 @@
 package com.microservices.margo.order_service;
 
-import com.microservices.margo.order_service.core.infrastructure.config.CorrelationProperties;
-import com.microservices.margo.order_service.core.infrastructure.config.RabbitMQProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.retry.annotation.EnableRetry;
 
+@EnableRetry
 @SpringBootApplication
-@EnableConfigurationProperties({RabbitMQProperties.class, CorrelationProperties.class})
+@ConfigurationPropertiesScan
 public class OrderServiceApplication {
 
 	public static void main(String[] args) {
