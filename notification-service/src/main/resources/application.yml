@@ -23,6 +23,10 @@ rabbitmq:
 server:
   port: 8090
 
+correlation:
+  key: correlationId
+  header: X-Correlation-Id
+
 management:
   endpoint:
     health:
