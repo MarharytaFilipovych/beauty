@@ -13,10 +13,22 @@ src/main/java/com/microservices/margo/notification_service/:
     * mapper/ -> NotificationMapper
     * usecase/ -> StoreNotificationUseCase
   * infrastructure/
-    * config/ -> RabbitMQConfig, RabbitMQProperties
+    * config/ -> RabbitMQConfig, RabbitMQProperties, CorrelationProperties
     * entity/ -> JPA NotificationEntity
     * listener/ -> OrderCreatedListener
     * repository/ -> JPA NotificationRepository
+    
+## Correlation ID
+The `OrderCreatedListener` reads `X-Correlation-Id` from the RabbitMQ message header
+and stores it in MDC for the duration of event processing.
+Falls back to `"unknown"` if the header is absent.
+
+## Logging
+Logback is configured in `src/main/resources/logback-spring.xml` to include `correlationId` from MDC in every log line:
+```
+%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [correlationId=%X{correlationId}] - %msg%n
+```
+If the `X-Correlation-Id` header is absent from the RabbitMQ message, `correlationId` is set to `"unknown"` in MDC rather than empty string — this is an explicit fallback in `OrderCreatedListener` to make missing correlation IDs visible in logs rather than silent.
 
 ---
 
@@ -106,7 +118,7 @@ docker exec -it notification-db psql -U postgres -d notifications \
 
 ### Test coverage:
 * `StoreNotificationUseCaseTest` - 2 unit tests
-* `OrderCreatedListenerTest` - 1 unit test
+* `OrderCreatedListenerTest` - 3 unit tests
 
 ---
 

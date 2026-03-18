@@ -217,3 +217,100 @@ minikube stop
 minikube delete
 minikube start --memory= --cpus=
 ```
+
+### Architecture Notes
+
+**Correlation ID propagation:**
+- Every incoming request is assigned an `X-Correlation-Id` (reused if provided, generated if absent)
+- The gateway forwards it to all downstream services via `HttpServletRequestWrapper`
+- Each service stores it in MDC so every log line includes it automatically
+- RabbitMQ messages carry it as a message header
+- The notification-service reads it back from the message header
+
+**Resiliency:**
+- All outbound `RestClient` calls use Spring Retry — 3 attempts with 500ms backoff on `ResourceAccessException`
+- Fallbacks return `503 Service Unavailable` when all retries are exhausted
+- Timeouts are configured on the `RestClient` bean
+
+**Kubernetes:**
+- `order-service` runs 3 replicas with `RollingUpdate` strategy
+- HPA auto-scales `order-service` between 3–6 replicas based on CPU (70% threshold)
+- All services have `readinessProbe`, `livenessProbe`, and resource limits
+
+**Structured logging:**
+- All services use Logback with a custom pattern that includes `correlationId` from MDC
+- Every log line looks like: `10:15:32.123 [http-nio-8088-exec-1] INFO  c.m.m.o.CreateOrderUseCase [correlationId=abc-123] - Placing order...`
+- To stream logs from all order-service pods at once:
+```bash
+kubectl logs -l app=order-service --prefix=true
+```
+
+---
+
+### Scaling
+
+Scale order-service manually:
+```bash
+kubectl scale deployment order-service --replicas=3
+```
+
+Enable and apply HPA:
+```bash
+minikube addons enable metrics-server
+kubectl apply -f k8s/order-service-hpa.yml
+kubectl get hpa
+```
+
+---
+
+### Rollout Steps
+
+Build and load a new image:
+```bash
+docker build -t order-service:v2 ./order-service
+minikube image load order-service:v2
+```
+
+Trigger rolling update:
+```bash
+kubectl set image deployment/order-service order-service=order-service:v2
+```
+
+Watch progress:
+```bash
+kubectl rollout status deployment/order-service
+```
+
+Rollback:
+```bash
+kubectl rollout undo deployment/order-service
+```
+
+---
+
+### Verify Correlation ID
+
+Send a request with a custom correlation ID:
+```bash
+curl -X POST http://cafetiria.local/orders \
+  -H "Content-Type: application/json" \
+  -H "X-Correlation-Id: my-test-id-123" \
+  -d '{
+    "ownerUserId": "<user-id>",
+    "itemName": "Latte",
+    "quantity": 2,
+    "price": 5.99
+  }'
+```
+
+Check it appears across all pods:
+```bash
+kubectl logs -l app=order-service | grep "my-test-id-123"
+kubectl logs -l app=gateway | grep "my-test-id-123"
+kubectl logs -l app=notification-service | grep "my-test-id-123"
+```
+
+Verify 3 pods are running:
+```bash
+kubectl get pods -l app=order-service
+```

@@ -10,6 +10,7 @@ It drives the full lifecycle: create order → confirm order → compensate on f
 src/main/java/com/microservices/margo/workflow_service/
 * api/ -> WorkflowController, HealthController
     * exception/ -> GlobalExceptionHandler, ErrorResponse
+    * filter/ -> CorrelationIdFilter
 * core/
     * application/
         * mapper/ -> WorkflowMapper
@@ -21,13 +22,28 @@ src/main/java/com/microservices/margo/workflow_service/
         * client/ -> OrderServiceClient
         * entity/ -> WorkflowEntity
         * repository/ -> WorkflowRepository
-        * config/ -> SwaggerConfig, RestClientConfig, ObjectMapperConfig, OrderServiceProperties
+        * config/ -> SwaggerConfig, RestClientConfig, ObjectMapperConfig, OrderServiceProperties, CorrelationProperties
       
 ### Saga steps
 
 1) Create order via Order Service  → creation failed -> `FAILED` 
 2) Confirm order (`PENDING → CONFIRMED`) → confirmation failed -> cancel order (`PENDING → CANCELLED`) → `COMPENSATED` (cancellation failed) or `FAILED` (compensation failed)
 3) Mark workflow `COMPLETED` (if everything worked out)
+
+### Correlation ID
+A `CorrelationIdFilter` reads or generates `X-Correlation-Id` on every request
+and stores it in MDC. Outbound calls to order-service forward it via a `RestClient` interceptor.
+
+### Resiliency
+`OrderServiceClient` uses Spring Retry — 3 attempts with 500ms backoff.
+Returns `503` when order-service is unreachable, `504` on timeout.
+
+### Logging
+Logback is configured in `src/main/resources/logback-spring.xml` to include `correlationId` from MDC in every log line:
+```
+%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [correlationId=%X{correlationId}] - %msg%n
+```
+If no correlation ID is present in MDC (e.g. background threads), `%X{correlationId}` renders as empty string.
 
 ---
 
@@ -117,7 +133,8 @@ The API will be available at `http://localhost:8091`.
 * `GlobalExceptionHandlerTest` — 16 unit tests
 * `HealthControllerTest` - 4 unit tests
 * `WorkflowTest` - 10 unit tests
-* `OrderServiceClientTest` - 4 unit tests
+* `OrderServiceClientTest` - 8 unit tests
+* `CoorelationIdFilterTest` - 4 unit tests
 
 ---
 

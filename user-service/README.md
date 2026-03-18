@@ -23,6 +23,7 @@
 src/main/java/com/microservices/margo/users/
 * api/ -> HTTP layer (no business logic): UserController
   * exception/ -> ErrorResponse, GlobalExceptionHandler
+  * filter/ -> CorrelationIdFilter
 * core/
   * domain/ -> User record
     * validation/ -> MinAge, MimAgeValidator, ValidationConstants
@@ -38,6 +39,18 @@ src/main/java/com/microservices/margo/users/
 
 One migration was applied which created the **users** table. It is located within
 `/src/main/resources/db/migration/V1__create_users_table.sql`.
+
+
+## Correlation ID
+A `CorrelationIdFilter` reads or generates `X-Correlation-Id` on every request,
+stores it in MDC, and returns it in the response header.
+
+## Logging
+Logback is configured in `src/main/resources/logback-spring.xml` to include `correlationId` from MDC in every log line:
+```
+%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [correlationId=%X{correlationId}] - %msg%n
+```
+If no correlation ID is present in MDC (e.g. background threads), `%X{correlationId}` renders as empty string.
 
 ---
 
@@ -132,6 +145,7 @@ The API will be available at `http://localhost:8080`.
 * `GetUserUseCaseTest` - 2 unit tests
 * `MinAgeValidatorTest` - 7 unit tests
 * `GlobalExceptionHandlerTest` — 16 unit tests
+* `CoorelationIdFilterTest` - 4 unit tests
 ---
 
 ## Swagger UI

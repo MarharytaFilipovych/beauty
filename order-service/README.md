@@ -21,6 +21,7 @@ These rules are enforced within `Order` domain entity with the help of annotatio
 src/main/java/com/cafeteria/:
 * api/ ->  HTTP layer (no business logic): OrderController, HealthController
   * exception/ -> ErrorResponse, GlobalExceptionHandler
+  * filter/ -> CorrelationIdFilter
 * core/
   * domain/ -> Order aggregate, OrderStatus enum
     * validation/ -> ValidationConstants
@@ -32,9 +33,26 @@ src/main/java/com/cafeteria/:
   * infrastructure/
     * entity/ -> JPA OrderEntity
     * repository/ -> JPA OrderRepository interface
-    * config/ -> ObjectMapperConfig, SwaggerConfig, RestClientConfig, RabbitMQConfig, RabbitMQProperties
+    * config/ -> ObjectMapperConfig, SwaggerConfig, RestClientConfig, RabbitMQConfig, RabbitMQProperties, CorrelationProperties
     * client/ -> UserValidationClient
     * publisher/ -> OrderEventPublisher
+
+## Correlation ID
+A `CorrelationIdFilter` reads or generates `X-Correlation-Id` on every request,
+stores it in MDC, and returns it in the response header.
+All outbound calls to user-service forward it automatically via a `RestClient` interceptor.
+RabbitMQ events carry it as a message header.
+
+## Resiliency
+`UserValidationClient` uses Spring Retry — 3 attempts with 500ms backoff.
+Returns `503` when user-service is unreachable after all retries.
+
+## Logging
+Logback is configured in `src/main/resources/logback-spring.xml` to include `correlationId` from MDC in every log line:
+```
+%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [correlationId=%X{correlationId}] - %msg%n
+```
+If no correlation ID is present in MDC (e.g. background threads), `%X{correlationId}` renders as empty string.
 
 Two migration were applied, which encapsulated **orders** table creation and then its alteration (the removal of the customer name column and the addition of the customer id instead). It is located within _/src/main/resources/db/migration/V1__create_orders_table.sql_.
 ---
@@ -123,7 +141,9 @@ The API will be available at `http://localhost:8088`.
 * `OrderTest` — 41 unit tests
 * `OrderStatusTest` - 16 unit tests
 * `GlobalExceptionHandlerTest` — 16 unit tests
-* `OrderEventPublisherTest` - 1 unit test
+* `OrderEventPublisherTest` - 2 unit test
+* `CoorelationIdFilterTest` - 4 unit tests
+* `userValidationClient` - 4 unit tests
 ---
 
 ---
