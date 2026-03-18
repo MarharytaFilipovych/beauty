@@ -34,9 +34,11 @@ src/main/java/com/microservices/margo/workflow_service/
 A `CorrelationIdFilter` reads or generates `X-Correlation-Id` on every request
 and stores it in MDC. Outbound calls to order-service forward it via a `RestClient` interceptor.
 
-### Resiliency
-`OrderServiceClient` uses Spring Retry — 3 attempts with 500ms backoff.
-Returns `503` when order-service is unreachable, `504` on timeout.
+## Resiliency
+`OrderServiceClient` uses Spring Retry — 3 attempts with 300ms backoff on `ResourceAccessException`.
+- Returns `503 Service Unavailable` when order-service is unreachable after all retries.
+- Returns `504 Gateway Timeout` when the cause is a `SocketTimeoutException`.
+  HTTP connect timeout: 3s, read timeout: 5s (configured in `RestClientConfig`).
 
 ### Logging
 Logback is configured in `src/main/resources/logback-spring.xml` to include `correlationId` from MDC in every log line:
@@ -49,7 +51,7 @@ If no correlation ID is present in MDC (e.g. background threads), `%X{correlatio
 
 ## How to Run Locally
 
-**Prerequisites:** Java 21+, Order Service running, PostgreSQL running.
+**Prerequisites:** Java 17+, Order Service running, PostgreSQL running.
 
 1. Set environment variables:
 
@@ -133,7 +135,7 @@ The API will be available at `http://localhost:8091`.
 * `GlobalExceptionHandlerTest` — 16 unit tests
 * `HealthControllerTest` - 4 unit tests
 * `WorkflowTest` - 10 unit tests
-* `OrderServiceClientTest` - 8 unit tests
+* `OrderServiceClientTest` - 11 unit tests
 * `CoorelationIdFilterTest` - 4 unit tests
 
 ---

@@ -2,11 +2,13 @@ package com.microservices.margo.workflow_service.core.infrastructure.config;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
 @Configuration
@@ -14,9 +16,19 @@ import org.springframework.web.client.RestClient;
 public class RestClientConfig {
     private final CorrelationProperties correlationProperties;
 
+    @Value("${rest-client.connect-timeout-ms:3000}")
+    private int connectTimeout;
+
+    @Value("${rest-client.read-timeout-ms:5000}")
+    private int readTimeout;
+
     @Bean
     public RestClient restClient() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(connectTimeout);
+        factory.setReadTimeout(readTimeout);
         return RestClient.builder()
+                .requestFactory(factory)
                 .requestInterceptor(correlationIdInterceptor())
                 .build();
     }

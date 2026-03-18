@@ -43,9 +43,11 @@ stores it in MDC, and returns it in the response header.
 All outbound calls to user-service forward it automatically via a `RestClient` interceptor.
 RabbitMQ events carry it as a message header.
 
-## Resiliency
-`UserValidationClient` uses Spring Retry — 3 attempts with 500ms backoff.
-Returns `503` when user-service is unreachable after all retries.
+### Resiliency
+`UserValidationClient` uses Spring Retry — 3 attempts with 300ms backoff on `ResourceAccessException`.
+- Returns `503 Service Unavailable` when user-service is unreachable after all retries.
+- Returns `504 Gateway Timeout` when the cause is a `SocketTimeoutException`.
+  HTTP connect timeout: 3s, read timeout: 5s (configured in `RestClientConfig`).
 
 ## Logging
 Logback is configured in `src/main/resources/logback-spring.xml` to include `correlationId` from MDC in every log line:
@@ -60,7 +62,7 @@ Two migration were applied, which encapsulated **orders** table creation and the
 ---
 ## How to Run Locally
 
-**Prerequisites:** Java 21+, PostgreSQL running on `localhost:5432`
+**Prerequisites:** Java 17+, PostgreSQL running on `localhost:5432`
 1. Create the database:
 ```sql
 CREATE DATABASE cafetiria;
@@ -143,7 +145,7 @@ The API will be available at `http://localhost:8088`.
 * `GlobalExceptionHandlerTest` — 16 unit tests
 * `OrderEventPublisherTest` - 2 unit test
 * `CoorelationIdFilterTest` - 4 unit tests
-* `userValidationClient` - 4 unit tests
+* `UserValidationClient` - 4 unit tests
 ---
 
 ---

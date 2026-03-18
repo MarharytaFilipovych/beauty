@@ -7,6 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -18,8 +21,10 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.net.SocketTimeoutException;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static com.microservices.margo.workflow_service.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -135,43 +140,52 @@ class OrderServiceClientTest {
         verify(responseSpec).toBodilessEntity();
     }
 
-    @Test
-    @DisplayName("createOrderFallback throws 503 after retries exhausted")
-    void createOrderFallback_throws503() {
+    @ParameterizedTest(name = "createOrderFallback returns {1} for {0}")
+    @MethodSource("fallbackExceptions")
+    @DisplayName("createOrderFallback returns correct status based on exception cause")
+    void createOrderFallback_returnsCorrectStatus(ResourceAccessException exception, HttpStatus expectedStatus) {
         // Arrange
         CreateOrderRequest request = new CreateOrderRequest(OWNER_ID, "Latte", 2, BigDecimal.valueOf(5.99));
-        ResourceAccessException cause = new ResourceAccessException("timeout");
 
         // Act & Assert
-        assertThatThrownBy(() -> client.createOrderFallback(cause, request))
+        assertThatThrownBy(() -> client.createOrderFallback(exception, request))
                 .isInstanceOf(ResponseStatusException.class)
                 .extracting(e -> ((ResponseStatusException) e).getStatusCode())
-                .isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+                .isEqualTo(expectedStatus);
     }
 
-    @Test
-    @DisplayName("confirmOrderFallback throws 503 after retries exhausted")
-    void confirmOrderFallback_throws503() {
-        // Arrange
-        ResourceAccessException cause = new ResourceAccessException("timeout");
-
-        // Act & Assert
-        assertThatThrownBy(() -> client.confirmOrderFallback(cause, ORDER_ID))
+    @ParameterizedTest(name = "confirmOrderFallback returns {1} for {0}")
+    @MethodSource("fallbackExceptions")
+    @DisplayName("confirmOrderFallback returns correct status based on exception cause")
+    void confirmOrderFallback_returnsCorrectStatus(ResourceAccessException exception, HttpStatus expectedStatus) {
+        // Arrange & Act & Assert
+        assertThatThrownBy(() -> client.confirmOrderFallback(exception, ORDER_ID))
                 .isInstanceOf(ResponseStatusException.class)
                 .extracting(e -> ((ResponseStatusException) e).getStatusCode())
-                .isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+                .isEqualTo(expectedStatus);
     }
 
-    @Test
-    @DisplayName("cancelOrderFallback throws 503 after retries exhausted")
-    void cancelOrderFallback_throws503() {
-        // Arrange
-        ResourceAccessException cause = new ResourceAccessException("timeout");
-
-        // Act & Assert
-        assertThatThrownBy(() -> client.cancelOrderFallback(cause, ORDER_ID))
+    @ParameterizedTest(name = "cancelOrderFallback returns {1} for {0}")
+    @MethodSource("fallbackExceptions")
+    @DisplayName("cancelOrderFallback returns correct status based on exception cause")
+    void cancelOrderFallback_returnsCorrectStatus(ResourceAccessException exception, HttpStatus expectedStatus) {
+        // Arrange & Act & Assert
+        assertThatThrownBy(() -> client.cancelOrderFallback(exception, ORDER_ID))
                 .isInstanceOf(ResponseStatusException.class)
                 .extracting(e -> ((ResponseStatusException) e).getStatusCode())
-                .isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+                .isEqualTo(expectedStatus);
+    }
+
+    static Stream<Arguments> fallbackExceptions() {
+        return Stream.of(
+                Arguments.of(
+                        new ResourceAccessException("timeout", new SocketTimeoutException()),
+                        HttpStatus.GATEWAY_TIMEOUT
+                ),
+                Arguments.of(
+                        new ResourceAccessException("connection refused"),
+                        HttpStatus.SERVICE_UNAVAILABLE
+                )
+        );
     }
 }

@@ -42,3 +42,7 @@ correlation:
 retry:
   maxAttempts: 5
   backoff-delay: 300
+
+rest-client:
+  connect-timeout-ms: 3000
+  read-timeout-ms: 5000

@@ -37,3 +37,7 @@ retry:
 correlation:
   header: X-Correlation-Id
   key: correlationId
+
+rest-client:
+  connect-timeout-ms: 3000
+  read-timeout-ms: 5000

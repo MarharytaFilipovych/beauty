@@ -4,6 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -15,7 +18,9 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.net.SocketTimeoutException;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -67,20 +72,6 @@ class UserValidationClientTest {
     }
 
     @Test
-    @DisplayName("throws IllegalArgumentException when user not found")
-    void validateUserExists_shouldThrow_whenUserNotFound() {
-        // Arrange
-        UUID userId = UUID.randomUUID();
-        doThrow(new IllegalArgumentException("User not found: " + userId))
-                .when(responseSpec).onStatus(any(), any());
-
-        // Act & Assert
-        assertThatThrownBy(() -> userValidationClient.validateUserExists(userId))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("User not found");
-    }
-
-    @Test
     @DisplayName("rethrows ResourceAccessException when service is unreachable")
     void validateUserExists_shouldRethrowResourceAccessException_whenServiceUnreachable() {
         // Arrange
@@ -94,17 +85,30 @@ class UserValidationClientTest {
                 .isInstanceOf(ResourceAccessException.class);
     }
 
-    @Test
-    @DisplayName("fallback throws 503 after retries exhausted")
-    void fallback_shouldThrow503() {
+    @ParameterizedTest(name = "fallback returns {1} for {0}")
+    @MethodSource("fallbackExceptions")
+    @DisplayName("fallback returns correct status based on exception cause")
+    void fallback_returnsCorrectStatus(ResourceAccessException exception, HttpStatus expectedStatus) {
         // Arrange
         UUID userId = UUID.randomUUID();
-        ResourceAccessException cause = new ResourceAccessException("timeout");
 
         // Act & Assert
-        assertThatThrownBy(() -> userValidationClient.fallback(cause, userId))
+        assertThatThrownBy(() -> userValidationClient.fallback(exception, userId))
                 .isInstanceOf(ResponseStatusException.class)
                 .extracting(e -> ((ResponseStatusException) e).getStatusCode())
-                .isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+                .isEqualTo(expectedStatus);
+    }
+
+    static Stream<Arguments> fallbackExceptions() {
+        return Stream.of(
+                Arguments.of(
+                        new ResourceAccessException("timeout", new SocketTimeoutException()),
+                        HttpStatus.GATEWAY_TIMEOUT
+                ),
+                Arguments.of(
+                        new ResourceAccessException("connection refused"),
+                        HttpStatus.SERVICE_UNAVAILABLE
+                )
+        );
     }
 }

@@ -13,12 +13,14 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.net.SocketTimeoutException;
 import java.util.UUID;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class UserValidationClient {
+
     private final RestClient restClient;
 
     @Value("${user-service.users-url}")
@@ -38,9 +40,17 @@ public class UserValidationClient {
     }
 
     @Recover
-    public void fallback(ResourceAccessException e, UUID userId){
+    public void fallback(ResourceAccessException e, UUID userId) {
         log.error("All retries exhausted for user validation userId={}", userId, e);
-        throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+        throw buildException(e);
+    }
+
+    private ResponseStatusException buildException(ResourceAccessException e) {
+        if (e.getCause() instanceof SocketTimeoutException) {
+            return new ResponseStatusException(HttpStatus.GATEWAY_TIMEOUT,
+                    "Users service timed out");
+        }
+        return new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
                 "Users service is unavailable after retries");
     }
 }

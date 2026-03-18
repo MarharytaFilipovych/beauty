@@ -228,9 +228,10 @@ minikube start --memory= --cpus=
 - The notification-service reads it back from the message header
 
 **Resiliency:**
-- All outbound `RestClient` calls use Spring Retry — 3 attempts with 500ms backoff on `ResourceAccessException`
-- Fallbacks return `503 Service Unavailable` when all retries are exhausted
-- Timeouts are configured on the `RestClient` bean
+- All outbound `RestClient` calls use Spring Retry — 3 attempts with 300ms backoff on `ResourceAccessException`
+- Returns `503 Service Unavailable` when the downstream service is unreachable after all retries
+- Returns `504 Gateway Timeout` when the cause is a `SocketTimeoutException`
+- HTTP connect timeout: 3s, read timeout: 5s (configured via `RestClientConfig` in each service)
 
 **Kubernetes:**
 - `order-service` runs 3 replicas with `RollingUpdate` strategy
