@@ -18,3 +18,7 @@ management.endpoint.health.show-details: always
 server:
   port: 8080
   servlet.context-path: /api
+
+correlation:
+  header: X-Correlation-Id
+  key: correlationId
