@@ -15,6 +15,8 @@ public final class TestData {
     public static final UUID WORKFLOW_ID = UUID.randomUUID();
     public static final UUID OWNER_ID = UUID.randomUUID();
     public static final UUID ORDER_ID = UUID.randomUUID();
+    public static final String CORRELATION_ID_HEADER = "X-Correlation-Id";
+    public static final String MDC_KEY = "correlationId";
 
     public static CreateOrderRequest buildRequest() {
         return new CreateOrderRequest(OWNER_ID, "Latte", 2, BigDecimal.valueOf(5.99));

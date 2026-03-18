@@ -1,12 +1,11 @@
 package com.microservices.margo.workflow_service;
 
-import com.microservices.margo.workflow_service.core.infrastructure.config.OrderServiceProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
-@EnableConfigurationProperties(OrderServiceProperties.class)
+@ConfigurationPropertiesScan
 public class WorkflowServiceApplication {
 
 	public static void main(String[] args) {

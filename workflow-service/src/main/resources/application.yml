@@ -33,3 +33,7 @@ order.service:
 retry:
   maxAttempts: 3
   backoff-delay: 300
+
+correlation:
+  header: X-Correlation-Id
+  key: correlationId
