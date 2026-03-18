@@ -49,3 +49,7 @@ management:
   endpoint:
     health:
       show-details: always
+
+correlation:
+  key: correlationId
+  header: X-Correlation-Id
