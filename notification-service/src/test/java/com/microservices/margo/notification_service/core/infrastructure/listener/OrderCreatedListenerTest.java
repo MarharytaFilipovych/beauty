@@ -12,8 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
-import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
-
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -34,7 +33,7 @@ class OrderCreatedListenerTest {
     private CorrelationProperties correlationProperties;
 
     @Mock
-    private JacksonJsonMessageConverter converter;
+    private Jackson2JsonMessageConverter converter;
 
     @InjectMocks
     private OrderCreatedListener orderCreatedListener;

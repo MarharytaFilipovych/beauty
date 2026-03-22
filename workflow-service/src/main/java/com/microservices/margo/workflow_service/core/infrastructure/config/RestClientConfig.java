@@ -5,15 +5,13 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
 @Configuration
 @RequiredArgsConstructor
 public class RestClientConfig {
+
     private final CorrelationProperties correlationProperties;
 
     @Value("${rest-client.connect-timeout-ms:3000}")
@@ -24,22 +22,19 @@ public class RestClientConfig {
 
     @Bean
     public RestClient restClient() {
-        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
         factory.setConnectTimeout(connectTimeout);
-        factory.setReadTimeout(readTimeout);
+        factory.setConnectionRequestTimeout(readTimeout);
+
         return RestClient.builder()
                 .requestFactory(factory)
-                .requestInterceptor(correlationIdInterceptor())
+                .requestInterceptor((request, body, execution) -> {
+                    String correlationId = MDC.get(correlationProperties.key());
+                    if (correlationId != null) {
+                        request.getHeaders().set(correlationProperties.header(), correlationId);
+                    }
+                    return execution.execute(request, body);
+                })
                 .build();
-    }
-
-    private ClientHttpRequestInterceptor correlationIdInterceptor() {
-        return (HttpRequest request, byte[] body, ClientHttpRequestExecution execution) -> {
-            String correlationId = MDC.get(correlationProperties.key());
-            if (correlationId != null){
-                request.getHeaders().set(correlationProperties.header(), correlationId);
-            }
-            return execution.execute(request, body);
-        };
     }
 }
