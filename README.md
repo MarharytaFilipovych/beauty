@@ -291,27 +291,155 @@ kubectl rollout undo deployment/order-service
 
 ### Verify Correlation ID
 
+### 1. Correlation ID end-to-end
+
 Send a request with a custom correlation ID:
 ```bash
-curl -X POST http://cafetiria.local/orders \
+curl -X POST http://cafetiria.local/workflows/create-order \
   -H "Content-Type: application/json" \
   -H "X-Correlation-Id: my-test-id-123" \
   -d '{
-    "ownerUserId": "<user-id>",
+    "ownerUserId": "<valid-user-id>",
     "itemName": "Latte",
     "quantity": 2,
     "price": 5.99
   }'
 ```
 
-Check it appears across all pods:
+Check the response header contains it:
 ```bash
-kubectl logs -l app=order-service | grep "my-test-id-123"
-kubectl logs -l app=gateway | grep "my-test-id-123"
-kubectl logs -l app=notification-service | grep "my-test-id-123"
+curl -v -X POST http://cafetiria.local/workflows/create-order \
+  -H "Content-Type: application/json" \
+  -H "X-Correlation-Id: my-test-id-123" \
+  -d '{...}' 2>&1 | grep "X-Correlation-Id"
 ```
 
-Verify 3 pods are running:
+Check it appears in logs across all services:
+```bash
+kubectl logs -l app=gateway --prefix=true | grep "my-test-id-123"
+kubectl logs -l app=order-service --prefix=true | grep "my-test-id-123"
+kubectl logs -l app=workflow-service --prefix=true | grep "my-test-id-123"
+kubectl logs -l app=notification-service --prefix=true | grep "my-test-id-123"
+```
+
+Send a request without a correlation ID and verify one is generated:
+```bash
+curl -v -X POST http://cafetiria.local/workflows/create-order \
+  -H "Content-Type: application/json" \
+  -d '{...}' 2>&1 | grep "X-Correlation-Id"
+```
+Expected: a UUID appears in the response header even though none was sent.
+
+---
+
+### 2. Resiliency — 503 on dependency down
+
+Scale down order-service to simulate unavailability:
+```bash
+kubectl scale deployment order-service --replicas=0
+```
+
+Send a workflow request:
+```bash
+curl -v -X POST http://cafetiria.local/workflows/create-order \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ownerUserId": "<valid-user-id>",
+    "itemName": "Latte",
+    "quantity": 2,
+    "price": 5.99
+  }'
+```
+Expected: `503 Service Unavailable` after retries are exhausted.
+
+Check logs to confirm retries happened:
+```bash
+kubectl logs -l app=workflow-service | grep "retries exhausted"
+```
+
+Restore order-service:
+```bash
+kubectl scale deployment order-service --replicas=3
+```
+
+---
+
+### 3. Resiliency — 504 on timeout
+
+Verify read timeout is configured (5s). You can confirm by checking the logs when order-service is slow — `SocketTimeoutException` in the cause will produce a `504`.
+
+---
+
+### 4. Multiple replicas running
+
+Verify 3 order-service pods are running:
 ```bash
 kubectl get pods -l app=order-service
 ```
+Expected output:
+```
+NAME                             READY   STATUS    RESTARTS   AGE
+order-service-xxx-aaa            1/1     Running   0          2m
+order-service-xxx-bbb            1/1     Running   0          2m
+order-service-xxx-ccc            1/1     Running   0          2m
+```
+
+Send several requests and confirm different pods respond by watching logs from all pods simultaneously:
+```bash
+kubectl logs -l app=order-service --prefix=true -f
+```
+
+---
+
+### 5. Rolling update
+
+Build and load a new image:
+```bash
+docker build -t order-service:v2 ./order-service
+minikube image load order-service:v2
+```
+
+Trigger the rolling update:
+```bash
+kubectl set image deployment/order-service order-service=order-service:v2
+```
+
+Watch pods being replaced one by one with zero downtime:
+```bash
+kubectl rollout status deployment/order-service
+```
+
+While rolling update is in progress, verify service stays available:
+```bash
+curl http://cafetiria.local/health/orders
+```
+Expected: `200 OK` throughout the entire rollout.
+
+---
+
+### 6. Rollback
+```bash
+kubectl rollout undo deployment/order-service
+kubectl rollout status deployment/order-service
+```
+
+Verify previous version is running:
+```bash
+kubectl get pods -l app=order-service
+```
+
+---
+
+### 7. HPA
+
+Enable metrics-server and apply HPA:
+```bash
+minikube addons enable metrics-server
+kubectl apply -f k8s/order-service-hpa.yml
+```
+
+Verify HPA is active:
+```bash
+kubectl get hpa
+```
+Expected: `MINPODS` = 3, `MAXPODS` = 6, `TARGETS` shows a CPU percentage.

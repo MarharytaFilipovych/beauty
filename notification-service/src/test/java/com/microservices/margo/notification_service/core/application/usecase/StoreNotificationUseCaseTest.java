@@ -35,7 +35,7 @@ class StoreNotificationUseCaseTest {
 
     private OrderCreatedEvent buildEvent() {
         return new OrderCreatedEvent(
-                UUID.randomUUID(), Instant.now(), UUID.randomUUID(),
+                UUID.randomUUID(), Instant.now(), UUID.randomUUID().toString(),
                 UUID.randomUUID(), UUID.randomUUID(), "Order created: Latte x2 @ 5.99"
         );
     }

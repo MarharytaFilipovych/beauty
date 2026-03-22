@@ -27,7 +27,7 @@ public class NotificationEntity {
     private UUID eventId;
 
     @Column(name = "correlation_id")
-    private UUID correlationId;
+    private String correlationId;
 
     @Column(name = "core_item_id")
     private UUID coreItemId;

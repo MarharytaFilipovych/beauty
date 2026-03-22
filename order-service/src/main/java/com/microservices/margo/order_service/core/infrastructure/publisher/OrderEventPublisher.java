@@ -27,7 +27,7 @@ public class OrderEventPublisher {
         OrderCreatedEvent event = new OrderCreatedEvent(
                 UUID.randomUUID(),
                 Instant.now(),
-                UUID.fromString(correlationId),
+                correlationId,
                 order.id(),
                 order.ownerUserId(),
                 "Order created: %s x%d @ %s".formatted(order.itemName(), order.quantity(), order.price())

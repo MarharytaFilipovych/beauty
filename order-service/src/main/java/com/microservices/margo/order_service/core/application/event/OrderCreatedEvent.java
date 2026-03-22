@@ -6,7 +6,7 @@ import java.util.UUID;
 public record OrderCreatedEvent(
         UUID eventId,
         Instant occurredAt,
-        UUID correlationId,
+        String correlationId,
         UUID orderId,
         UUID ownerUserId,
         String payload

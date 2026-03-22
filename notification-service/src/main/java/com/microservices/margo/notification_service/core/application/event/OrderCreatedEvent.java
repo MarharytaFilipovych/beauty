@@ -8,7 +8,7 @@ import java.util.UUID;
 public record OrderCreatedEvent(
         @NotNull UUID eventId,
         @NotNull Instant occurredAt,
-        @NotNull UUID correlationId,
+        @NotNull String correlationId,
         @NotNull UUID orderId,
         @NotNull UUID ownerUserId,
         String payload
