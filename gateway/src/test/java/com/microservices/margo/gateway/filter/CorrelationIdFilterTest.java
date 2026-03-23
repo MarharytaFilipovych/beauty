@@ -18,7 +18,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.UUID;
 
-import static com.microservices.margo.gateway.filter.CorrelationIdFilter.CORRELATION_ID_HEADER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -26,6 +25,8 @@ import static org.mockito.Mockito.verify;
 @DisplayName("CorrelationIdFilter tests")
 @ExtendWith(MockitoExtension.class)
 class CorrelationIdFilterTest {
+
+    public static final String CORRELATION_ID_HEADER = "X-Correlation-Id";
 
     private final CorrelationIdFilter filter = new CorrelationIdFilter();
 

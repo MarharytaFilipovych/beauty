@@ -10,9 +10,13 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.support.converter.DefaultJackson2JavaTypeMapper;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import com.microservices.margo.notification_service.core.application.event.OrderCreatedEvent;
+import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.support.converter.ClassMapper;
 
 @Configuration
 @RequiredArgsConstructor
@@ -42,6 +46,16 @@ public class RabbitMQConfig {
                 .addModule(new JavaTimeModule())
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .build();
-        return new Jackson2JsonMessageConverter(mapper);
+        Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter(mapper);
+        converter.setClassMapper(new ClassMapper() {
+            @Override
+            public void fromClass(Class<?> clazz, MessageProperties properties) {}
+
+            @Override
+            public Class<?> toClass(MessageProperties properties) {
+                return OrderCreatedEvent.class;
+            }
+        });
+        return converter;
     }
 }

@@ -354,8 +354,9 @@ Expected: `503 Service Unavailable` after retries are exhausted.
 
 Check logs to confirm retries happened:
 ```bash
-kubectl logs -l app=workflow-service | grep "retries exhausted"
+kubectl logs -l app=workflow-service | grep "unavailable after retries"
 ```
+Expected: `503 SERVICE_UNAVAILABLE "Order service is unavailable after retries"` — this confirms the fallback was called after all retry attempts were exhausted.
 
 Restore order-service:
 ```bash

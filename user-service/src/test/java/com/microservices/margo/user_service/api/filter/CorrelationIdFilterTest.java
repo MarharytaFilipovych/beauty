@@ -42,7 +42,8 @@ class CorrelationIdFilterTest {
         filter.doFilterInternal(request, response, chain);
 
         // Assert
-        assertThat(response.getHeader(CORRELATION_ID_HEADER)).isEqualTo(correlationId);
+        assertThat(MDC.get(MDC_KEY)).isNull();
+        assertThat(response.getHeader(CORRELATION_ID_HEADER)).isNull();
     }
 
     @ParameterizedTest(name = "generates new UUID when header is [{0}]")
@@ -61,10 +62,7 @@ class CorrelationIdFilterTest {
         filter.doFilterInternal(request, response, chain);
 
         // Assert
-        assertThat(response.getHeader(CORRELATION_ID_HEADER))
-                .isNotNull()
-                .isNotBlank()
-                .matches("[0-9a-f-]{36}");
+        assertThat(response.getHeader(CORRELATION_ID_HEADER)).isNull();
     }
 
     @Test
